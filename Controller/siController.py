@@ -57,13 +57,16 @@ class SiController(QWidget):
         self.process_list: list[Process] | None = None
         self.speed = 1000
 
+        self.fit = FirstFit(self)
+
     def ui_turning(self):
         self.ui.ramBar_lo.setAlignment(Qt.AlignTop)
         self.ui.processBar_lo.setAlignment(Qt.AlignTop)
         self.ui.tempBar_lo.setAlignment(Qt.AlignTop)
 
-    def setup_data(self, data):
-        pass
+    def set_data(self, ram_block_list, process_list):
+        self.ram_block_list = ram_block_list
+        self.process_list = process_list
 
     def connect_action(self):
         self.ui.speed075_btn.clicked.connect(self.__set_speed_x075)
@@ -89,4 +92,19 @@ class SiController(QWidget):
         self.speed = 1250
         self.__set_speed_btn_default_css()
         self.ui.speed125_btn.setStyleSheet('background-color: #999999;')
+
+    def run_(self):
+        pass
+
+    def pause_(self):
+        pass
+
+
+class FirstFit:
+    def __init__(self, mother):
+        self.mother = mother
+
+
+
+
 

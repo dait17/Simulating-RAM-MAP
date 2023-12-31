@@ -17,6 +17,10 @@ class Ui_RamBlockDemo(object):
         RamBlockDemo.resize(520, 30)
         RamBlockDemo.setMinimumSize(QtCore.QSize(0, 30))
         RamBlockDemo.setMaximumSize(QtCore.QSize(16777215, 100))
+        RamBlockDemo.setStyleSheet("* {\n"
+"    font-weight: 500;\n"
+"    color: #f0f0f0;\n"
+"}")
         self.horizontalLayout = QtWidgets.QHBoxLayout(RamBlockDemo)
         self.horizontalLayout.setContentsMargins(0, 0, 0, 0)
         self.horizontalLayout.setSpacing(0)
@@ -42,7 +46,7 @@ class Ui_RamBlockDemo(object):
         font = QtGui.QFont()
         font.setPointSize(9)
         font.setBold(True)
-        font.setWeight(75)
+        font.setWeight(62)
         self.endCell_lb.setFont(font)
         self.endCell_lb.setAlignment(QtCore.Qt.AlignBottom|QtCore.Qt.AlignHCenter)
         self.endCell_lb.setObjectName("endCell_lb")
@@ -59,6 +63,8 @@ class Ui_RamBlockDemo(object):
         self.capacity_lb = QtWidgets.QLabel(self.frame_3)
         font = QtGui.QFont()
         font.setPointSize(12)
+        font.setBold(True)
+        font.setWeight(62)
         self.capacity_lb.setFont(font)
         self.capacity_lb.setText("")
         self.capacity_lb.setAlignment(QtCore.Qt.AlignCenter)

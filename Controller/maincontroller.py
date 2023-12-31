@@ -29,6 +29,7 @@ class MainController(QMainWindow):
 
     def __setup_simulation_frame(self):
         if self.simulationFrame is not None:
+            self.simulationFrame.kill_oj()
             self.simulationFrame.deleteLater()
         self.simulationFrame = SiController()
         self.simulationFrame.ui.back_btn.clicked.connect(self.__back_action)
@@ -49,10 +50,16 @@ class MainController(QMainWindow):
         self.simulationFrame.set_data(self.ram_block_list, self.process_list)
 
     def __start_action(self):
-        self.__setup_data()
-        self.ui.mainBodyContainer.setCurrentIndex(1)
-        self.simulationFrame.run_()
+        try:
+            self.__setup_data()
+            self.simulationFrame.set_data(self.ram_block_list, self.process_list)
+
+            self.ui.mainBodyContainer.setCurrentIndex(1)
+            self.simulationFrame.run_()
+        except Exception as e:
+            print(e)
 
     def __back_action(self):
         self.ui.mainBodyContainer.setCurrentIndex(0)
         self.__setup_simulation_frame()
+        self.ui.mainBodyContainer.addWidget(self.simulationFrame)

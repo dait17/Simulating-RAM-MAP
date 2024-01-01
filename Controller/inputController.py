@@ -26,6 +26,7 @@ class InputController(QWidget):
 
     def connect_action(self):
         self.ui.ramInput_le.textChanged.connect(self.__control_ram_input)
+        self.ui.processInput_le.textChanged.connect(self.__control_process_input)
         self.ui.green_btn.clicked.connect(lambda: self.add_ram_block(0))
         self.ui.red_btn.clicked.connect(lambda: self.add_ram_block(1))
         self.ui.blue_btn.clicked.connect(self.add_process_input)
@@ -60,7 +61,15 @@ class InputController(QWidget):
             self.ui.errorMess_lb.setText("")
 
         else:
-            self.ui.errorMess_lb.setText("Chỉ nhập số")
+            self.ui.errorMess_lb.setText("Chỉ nhập số nguyên")
+
+    def __control_process_input(self):
+        capacity = self.ui.processInput_le.text()
+        if capacity.isdecimal():
+            self.ui.procesLEError_lb.setText("")
+
+        else:
+            self.ui.procesLEError_lb.setText("Chỉ nhập số nguyên")
 
     def count_ram(self):
         return self.ui.ramInsert_lo.count()
@@ -120,7 +129,7 @@ class InputController(QWidget):
             if InputController.re_update_ram_index:
                 self.update_ram_index()
 
-            capacity = float(capacity)
+            capacity = int(capacity)
             entry = RamBlockEntry(self.count_ram(), type_block, capacity, self.__move_ram_up, self.__move_ram_down,
                                   self.delete_ram_entry)
             self.ui.ramInsert_lo.addWidget(entry)
@@ -132,7 +141,7 @@ class InputController(QWidget):
             if InputController.re_update_process_index:
                 self.update_process_index()
 
-            capacity = float(capacity)
+            capacity = int(capacity)
 
             entry = ProcessEntry(self.count_process(), capacity, self.__move_process_up, self.__move_process_down,
                                  self.delete_process_entry)
@@ -192,13 +201,6 @@ class InputController(QWidget):
             model_list.append(wi.to_model())
         return model_list
 
-    def print_widget(self):
-        print('*' * 60)
-        for i in range(self.ui.ramInsert_lo.count()):
-            item = self.ui.ramInsert_lo.itemAt(i)
-            wi = item.widget()
-            print(f'{wi.index}: {wi.ui.capacity_lb.text()}')
-        print('*' * 60, end='\n\n')
 
 
 if __name__ == '__main__':

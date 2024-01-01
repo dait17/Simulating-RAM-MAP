@@ -5,7 +5,7 @@ from Views import Ui_RamAreaInput, Ui_ProcessInput, Ui_RamBlockDemo, Ui_ProcessD
 
 
 class RamBlockEntry(QWidget):
-    def __init__(self, index: int, type_block: int, capacity: float | int, up_func, down_func, del_func):
+    def __init__(self, index: int, type_block: int, capacity: int, up_func, down_func, del_func):
         super().__init__()
         self.index = index
         self.capacity = capacity
@@ -45,7 +45,7 @@ class RamBlockEntry(QWidget):
 
     def setup_ui(self):
         self.__normal_ui(None)
-        self.ui.capacity_lb.setText(RamBlockEntry.format_capacity(self.capacity))
+        self.ui.capacity_lb.setText(str(self.capacity))
         if self.type_block == 0:
             cs = '#bodyContainer{background-color: #229818}'
             self.append_css(cs)
@@ -67,33 +67,20 @@ class RamBlockEntry(QWidget):
 
     @staticmethod
     def valid_capacity_input(inp: str):
-        sp = inp.split('.')
-        if len(sp) == 2 and sp[0].isdecimal() and sp[1].isdecimal():
+        if inp.isdecimal():
             return True
-        elif len(sp) == 1 and sp[0].isdecimal():
-            return True
-        else:
-            return False
-
-    @staticmethod
-    def convert_cap_to_float(cap: str):
-        if RamBlockEntry.valid_capacity_input(cap):
-            return float(cap)
-        return 0
-
-    @staticmethod
-    def format_capacity(cap: float | int):
-        if type(cap) == int:
-            return str(cap)
-        str_cap = str(cap)
-        cap = str_cap.split('.')
-        if int(cap[1]) == 0:
-            return cap[0]
-        return str_cap
+        return False
+        # sp = inp.split('.')
+        # if len(sp) == 2 and sp[0].isdecimal() and sp[1].isdecimal():
+        #     return True
+        # elif len(sp) == 1 and sp[0].isdecimal():
+        #     return True
+        # else:
+        #     return False
 
 
 class ProcessEntry(QWidget):
-    def __init__(self, index: int, capacity: float, up_func, down_func, del_func):
+    def __init__(self, index: int, capacity: int, up_func, down_func, del_func):
         super().__init__()
         self.index = index
         self.capacity = capacity
@@ -109,7 +96,7 @@ class ProcessEntry(QWidget):
         self.__normal_ui(None)
 
     def setup_obj(self):
-        self.ui.capacity_lb.setText(RamBlockEntry.format_capacity(self.capacity))
+        self.ui.capacity_lb.setText(str(self.capacity))
         self.ui.index_lb.setText(str(self.index))
 
     def __normal_ui(self, event):

@@ -80,7 +80,7 @@
 	background-color: #367BAD;
 }
 
-#errorMess_lb {
+#errorMess_lb, #procesLEError_lb, #ramInputError_lb, #processInputError_lb {
 	color: rgb(255,0,0);
 }
 
@@ -90,7 +90,7 @@ QScrollBar::vertical {
 }
 </string>
   </property>
-  <layout class="QHBoxLayout" name="horizontalLayout">
+  <layout class="QVBoxLayout" name="verticalLayout_19">
    <property name="spacing">
     <number>0</number>
    </property>
@@ -107,6 +107,134 @@ QScrollBar::vertical {
     <number>0</number>
    </property>
    <item>
+    <widget class="QFrame" name="frame_23">
+     <property name="minimumSize">
+      <size>
+       <width>0</width>
+       <height>40</height>
+      </size>
+     </property>
+     <property name="maximumSize">
+      <size>
+       <width>16777215</width>
+       <height>40</height>
+      </size>
+     </property>
+     <property name="frameShape">
+      <enum>QFrame::StyledPanel</enum>
+     </property>
+     <property name="frameShadow">
+      <enum>QFrame::Raised</enum>
+     </property>
+     <layout class="QHBoxLayout" name="horizontalLayout">
+      <property name="spacing">
+       <number>0</number>
+      </property>
+      <property name="leftMargin">
+       <number>0</number>
+      </property>
+      <property name="topMargin">
+       <number>0</number>
+      </property>
+      <property name="rightMargin">
+       <number>0</number>
+      </property>
+      <property name="bottomMargin">
+       <number>0</number>
+      </property>
+      <item>
+       <widget class="QFrame" name="frame_25">
+        <property name="frameShape">
+         <enum>QFrame::StyledPanel</enum>
+        </property>
+        <property name="frameShadow">
+         <enum>QFrame::Raised</enum>
+        </property>
+        <layout class="QHBoxLayout" name="horizontalLayout_10">
+         <property name="spacing">
+          <number>0</number>
+         </property>
+         <property name="leftMargin">
+          <number>0</number>
+         </property>
+         <property name="topMargin">
+          <number>0</number>
+         </property>
+         <property name="rightMargin">
+          <number>0</number>
+         </property>
+         <property name="bottomMargin">
+          <number>0</number>
+         </property>
+         <item>
+          <widget class="QLabel" name="ramInputError_lb">
+           <property name="font">
+            <font>
+             <pointsize>10</pointsize>
+             <weight>62</weight>
+             <bold>true</bold>
+            </font>
+           </property>
+           <property name="text">
+            <string/>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignCenter</set>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+      </item>
+      <item>
+       <widget class="QFrame" name="frame_24">
+        <property name="frameShape">
+         <enum>QFrame::StyledPanel</enum>
+        </property>
+        <property name="frameShadow">
+         <enum>QFrame::Raised</enum>
+        </property>
+        <layout class="QHBoxLayout" name="horizontalLayout_7">
+         <property name="spacing">
+          <number>0</number>
+         </property>
+         <property name="leftMargin">
+          <number>0</number>
+         </property>
+         <property name="topMargin">
+          <number>0</number>
+         </property>
+         <property name="rightMargin">
+          <number>0</number>
+         </property>
+         <property name="bottomMargin">
+          <number>0</number>
+         </property>
+         <item>
+          <widget class="QLabel" name="processInputError_lb">
+           <property name="font">
+            <font>
+             <pointsize>10</pointsize>
+             <weight>62</weight>
+             <italic>false</italic>
+             <bold>true</bold>
+            </font>
+           </property>
+           <property name="text">
+            <string/>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignCenter</set>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
     <widget class="QWidget" name="bodyContainer" native="true">
      <property name="minimumSize">
       <size>
@@ -122,7 +250,7 @@ QScrollBar::vertical {
        <number>20</number>
       </property>
       <property name="topMargin">
-       <number>40</number>
+       <number>0</number>
       </property>
       <property name="rightMargin">
        <number>20</number>
@@ -514,7 +642,7 @@ QScrollBar::vertical {
                         </font>
                        </property>
                        <property name="text">
-                        <string>Tối đa 20 vùng</string>
+                        <string/>
                        </property>
                        <property name="alignment">
                         <set>Qt::AlignCenter</set>
@@ -572,20 +700,6 @@ QScrollBar::vertical {
                      <enum>QFrame::Raised</enum>
                     </property>
                     <layout class="QHBoxLayout" name="horizontalLayout_5">
-                     <item>
-                      <widget class="QLabel" name="label_5">
-                       <property name="font">
-                        <font>
-                         <pointsize>10</pointsize>
-                         <weight>62</weight>
-                         <bold>true</bold>
-                        </font>
-                       </property>
-                       <property name="text">
-                        <string>Dung lượng RAM:</string>
-                       </property>
-                      </widget>
-                     </item>
                      <item>
                       <widget class="QLabel" name="label_6">
                        <property name="minimumSize">
@@ -651,7 +765,7 @@ QScrollBar::vertical {
                      <property name="spacing">
                       <number>2</number>
                      </property>
-                     <item row="0" column="1">
+                     <item row="0" column="0">
                       <widget class="QLabel" name="label_8">
                        <property name="maximumSize">
                         <size>
@@ -671,35 +785,7 @@ QScrollBar::vertical {
                        </property>
                       </widget>
                      </item>
-                     <item row="0" column="0">
-                      <widget class="QLabel" name="label_7">
-                       <property name="font">
-                        <font>
-                         <pointsize>10</pointsize>
-                         <weight>62</weight>
-                         <bold>true</bold>
-                        </font>
-                       </property>
-                       <property name="text">
-                        <string>Số lượng vùng trống:</string>
-                       </property>
-                      </widget>
-                     </item>
                      <item row="1" column="0">
-                      <widget class="QLabel" name="label_9">
-                       <property name="font">
-                        <font>
-                         <pointsize>10</pointsize>
-                         <weight>62</weight>
-                         <bold>true</bold>
-                        </font>
-                       </property>
-                       <property name="text">
-                        <string>Tổng dung lượng vùng trống:</string>
-                       </property>
-                      </widget>
-                     </item>
-                     <item row="1" column="1">
                       <widget class="QLabel" name="label_10">
                        <property name="font">
                         <font>
@@ -752,7 +838,7 @@ QScrollBar::vertical {
                      <property name="spacing">
                       <number>2</number>
                      </property>
-                     <item row="0" column="1">
+                     <item row="0" column="0">
                       <widget class="QLabel" name="label_12">
                        <property name="maximumSize">
                         <size>
@@ -769,34 +855,6 @@ QScrollBar::vertical {
                        </property>
                        <property name="text">
                         <string/>
-                       </property>
-                      </widget>
-                     </item>
-                     <item row="0" column="0">
-                      <widget class="QLabel" name="label_11">
-                       <property name="font">
-                        <font>
-                         <pointsize>10</pointsize>
-                         <weight>62</weight>
-                         <bold>true</bold>
-                        </font>
-                       </property>
-                       <property name="text">
-                        <string>Số lượng vùng đã dùng:</string>
-                       </property>
-                      </widget>
-                     </item>
-                     <item row="1" column="0">
-                      <widget class="QLabel" name="label_13">
-                       <property name="font">
-                        <font>
-                         <pointsize>10</pointsize>
-                         <weight>62</weight>
-                         <bold>true</bold>
-                        </font>
-                       </property>
-                       <property name="text">
-                        <string>Tổng dung lượng vùng đẫ dùng:</string>
                        </property>
                       </widget>
                      </item>
@@ -1379,7 +1437,7 @@ QScrollBar::vertical {
                        <x>0</x>
                        <y>0</y>
                        <width>192</width>
-                       <height>358</height>
+                       <height>326</height>
                       </rect>
                      </property>
                      <layout class="QVBoxLayout" name="processInsert_lo">
@@ -1400,6 +1458,62 @@ QScrollBar::vertical {
                       </property>
                      </layout>
                     </widget>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="QFrame" name="frame_26">
+                    <property name="minimumSize">
+                     <size>
+                      <width>0</width>
+                      <height>26</height>
+                     </size>
+                    </property>
+                    <property name="maximumSize">
+                     <size>
+                      <width>16777215</width>
+                      <height>30</height>
+                     </size>
+                    </property>
+                    <property name="frameShape">
+                     <enum>QFrame::StyledPanel</enum>
+                    </property>
+                    <property name="frameShadow">
+                     <enum>QFrame::Raised</enum>
+                    </property>
+                    <layout class="QHBoxLayout" name="horizontalLayout_11">
+                     <property name="spacing">
+                      <number>0</number>
+                     </property>
+                     <property name="leftMargin">
+                      <number>0</number>
+                     </property>
+                     <property name="topMargin">
+                      <number>0</number>
+                     </property>
+                     <property name="rightMargin">
+                      <number>0</number>
+                     </property>
+                     <property name="bottomMargin">
+                      <number>0</number>
+                     </property>
+                     <item>
+                      <widget class="QLabel" name="procesLEError_lb">
+                       <property name="font">
+                        <font>
+                         <pointsize>10</pointsize>
+                         <weight>62</weight>
+                         <bold>true</bold>
+                        </font>
+                       </property>
+                       <property name="text">
+                        <string/>
+                       </property>
+                       <property name="alignment">
+                        <set>Qt::AlignCenter</set>
+                       </property>
+                      </widget>
+                     </item>
+                    </layout>
                    </widget>
                   </item>
                   <item alignment="Qt::AlignHCenter">
@@ -1590,20 +1704,6 @@ QScrollBar::vertical {
                       <number>2</number>
                      </property>
                      <item row="0" column="0">
-                      <widget class="QLabel" name="label_15">
-                       <property name="font">
-                        <font>
-                         <pointsize>10</pointsize>
-                         <weight>62</weight>
-                         <bold>true</bold>
-                        </font>
-                       </property>
-                       <property name="text">
-                        <string>Số lượng tiến trình:</string>
-                       </property>
-                      </widget>
-                     </item>
-                     <item row="0" column="1">
                       <widget class="QLabel" name="label_16">
                        <property name="minimumSize">
                         <size>
@@ -1633,23 +1733,6 @@ QScrollBar::vertical {
                       </widget>
                      </item>
                      <item row="1" column="0">
-                      <widget class="QLabel" name="label_17">
-                       <property name="font">
-                        <font>
-                         <pointsize>10</pointsize>
-                         <weight>62</weight>
-                         <bold>true</bold>
-                        </font>
-                       </property>
-                       <property name="text">
-                        <string>Tổng dung lượng tiến trình:</string>
-                       </property>
-                       <property name="wordWrap">
-                        <bool>true</bool>
-                       </property>
-                      </widget>
-                     </item>
-                     <item row="1" column="1">
                       <widget class="QLabel" name="label_18">
                        <property name="font">
                         <font>

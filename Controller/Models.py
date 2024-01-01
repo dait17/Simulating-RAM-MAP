@@ -3,7 +3,7 @@ from functools import reduce
 
 class RamBlock:
 
-    def __init__(self, index: int, type_block: int, capacity):
+    def __init__(self, index: int, type_block: int, capacity:int):
         """
 
         :param index:
@@ -26,7 +26,7 @@ class RamBlock:
         cp.end_cell = self.end_cell
         return cp
 
-    def __add__(self, other) -> float | int:
+    def __add__(self, other) -> int:
         return self.capacity + other.capacity
 
     @staticmethod
@@ -79,11 +79,11 @@ class RamBlock:
 
 
 class Process:
-    def __init__(self, index: int, capacity: float | int):
+    def __init__(self, index: int, capacity: int):
         self.capacity = capacity
         self.index = index
 
-    def __add__(self, other) -> float | int:
+    def __add__(self, other) -> int:
         return self.capacity + other.capacity
 
     @staticmethod

@@ -114,14 +114,14 @@ class InputController(QWidget):
 
         self.update_process_index()
 
-    def add_ram_block(self, t: int):
+    def add_ram_block(self, type_block: int):
         capacity = self.ui.ramInput_le.text()
         if RamBlockEntry.valid_capacity_input(capacity):
             if InputController.re_update_ram_index:
                 self.update_ram_index()
 
             capacity = float(capacity)
-            entry = RamBlockEntry(self.count_ram(), t, capacity, self.__move_ram_up, self.__move_ram_down,
+            entry = RamBlockEntry(self.count_ram(), type_block, capacity, self.__move_ram_up, self.__move_ram_down,
                                   self.delete_ram_entry)
             self.ui.ramInsert_lo.addWidget(entry)
             self.ui.ramInput_le.clear()

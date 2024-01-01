@@ -25,12 +25,26 @@ class RamBlockEntry(QWidget):
         self.ui.up_btn.clicked.connect(lambda: self.move_up(self.index))
         self.ui.down_btn.clicked.connect(lambda: self.move_down(self.index))
 
+        self.enterEvent = self.__hover_ui
+        self.leaveEvent = self.__normal_ui
+
+    def __normal_ui(self, event):
+        self.ui.up_btn.hide()
+        self.ui.down_btn.hide()
+        self.ui.del_btn.hide()
+
+    def __hover_ui(self, event):
+        self.ui.up_btn.show()
+        self.ui.down_btn.show()
+        self.ui.del_btn.show()
+
     def append_css(self, css: str):
         old_css = self.styleSheet()
         new_css = old_css + '\n' + css
         self.setStyleSheet(new_css)
 
     def setup_ui(self):
+        self.__normal_ui(None)
         self.ui.capacity_lb.setText(RamBlockEntry.format_capacity(self.capacity))
         if self.type_block == 0:
             cs = '#bodyContainer{background-color: #229818}'
@@ -92,15 +106,29 @@ class ProcessEntry(QWidget):
 
         self.setup_obj()
         self.connect_action()
+        self.__normal_ui(None)
 
     def setup_obj(self):
         self.ui.capacity_lb.setText(RamBlockEntry.format_capacity(self.capacity))
         self.ui.index_lb.setText(str(self.index))
 
+    def __normal_ui(self, event):
+        self.ui.up_btn.hide()
+        self.ui.down_btn.hide()
+        self.ui.del_btn.hide()
+
+    def __hover_ui(self, event):
+        self.ui.up_btn.show()
+        self.ui.down_btn.show()
+        self.ui.del_btn.show()
+
     def connect_action(self):
         self.ui.del_btn.clicked.connect(lambda: self.del_func(self.index))
         self.ui.up_btn.clicked.connect(lambda: self.move_up(self.index))
         self.ui.down_btn.clicked.connect(lambda: self.move_down(self.index))
+
+        self.enterEvent = self.__hover_ui
+        self.leaveEvent = self.__normal_ui
 
     def set_index(self, index: int):
         self.index = index
@@ -137,8 +165,11 @@ class RamBlockDemo(QWidget):
     def setup_ui(self):
         self.ui.capacity_lb.setText(str(self.model.capacity))
         self.__set_height(round(30 + (self.model.capacity / self.min_ram_cap) * 2))
-        self.ui.endCell_lb.setText(str(self.model.end_cell))
         self.normal_effect()
+        if self.model.type_block==0 or self.model.type_block==1:
+            self.ui.endCell_lb.setText(str(self.model.free_index+1))
+        else:
+            self.ui.endCell_lb.setText('')
 
     def set_model(self, model: RamBlock):
         self.model = model
@@ -180,6 +211,8 @@ class RamBlockDemo(QWidget):
         self.setStyleSheet(old_css + '\n' + css)
 
     def __set_height(self, h: int):
+        if h > 100:
+            h = 100
         self.setMinimumHeight(h)
         self.setMaximumHeight(h)
 

@@ -47,6 +47,7 @@ class MainController(QMainWindow):
         self.__setup_data()
         self.ui.mainBodyContainer.setCurrentIndex(1)
         self.simulationFrame.set_data(self.ram_block_list, self.process_list)
+        self.simulationFrame.set_first_fit()
 
     def __start_action(self):
         try:

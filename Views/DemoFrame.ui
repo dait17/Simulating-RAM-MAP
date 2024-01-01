@@ -65,6 +65,13 @@
 	background-color: #4e4e4e;
 }
 
+#firstFit_btn, #nextFit_btn, #bestFit_btn, #worstFit_btn {
+	border-radius: 6px;
+	padding: 4px 6px;
+	background-color: #4e4e4e;
+
+}
+
 #ramScrollArea, #ramBar_w, #tempScrollArea, #tempBar_w, #bottomScrollArea, #bottomBar_w, #fragmentOVBar, #processOVBar, #processOVScroll, #fragmentScroll {
 	background-color: rgba(255,255,255,0);
 	border-radius: 6px;
@@ -235,7 +242,7 @@ QScrollBar::vertical {
           <number>0</number>
          </property>
          <property name="topMargin">
-          <number>20</number>
+          <number>6</number>
          </property>
          <property name="rightMargin">
           <number>0</number>
@@ -309,6 +316,62 @@ QScrollBar::vertical {
                <property name="bottomMargin">
                 <number>0</number>
                </property>
+               <item>
+                <widget class="QFrame" name="frame_7">
+                 <property name="minimumSize">
+                  <size>
+                   <width>70</width>
+                   <height>0</height>
+                  </size>
+                 </property>
+                 <property name="maximumSize">
+                  <size>
+                   <width>70</width>
+                   <height>16777215</height>
+                  </size>
+                 </property>
+                 <property name="frameShape">
+                  <enum>QFrame::StyledPanel</enum>
+                 </property>
+                 <property name="frameShadow">
+                  <enum>QFrame::Raised</enum>
+                 </property>
+                 <layout class="QHBoxLayout" name="horizontalLayout_7">
+                  <property name="spacing">
+                   <number>0</number>
+                  </property>
+                  <property name="leftMargin">
+                   <number>0</number>
+                  </property>
+                  <property name="topMargin">
+                   <number>0</number>
+                  </property>
+                  <property name="rightMargin">
+                   <number>0</number>
+                  </property>
+                  <property name="bottomMargin">
+                   <number>0</number>
+                  </property>
+                  <item>
+                   <widget class="QLabel" name="label">
+                    <property name="font">
+                     <font>
+                      <pointsize>11</pointsize>
+                      <weight>62</weight>
+                      <bold>true</bold>
+                     </font>
+                    </property>
+                    <property name="text">
+                     <string>Tốc độ:</string>
+                    </property>
+                    <property name="alignment">
+                     <set>Qt::AlignCenter</set>
+                    </property>
+                   </widget>
+                  </item>
+                 </layout>
+                </widget>
+               </item>
                <item>
                 <widget class="QFrame" name="frame_9">
                  <property name="minimumSize">
@@ -471,7 +534,7 @@ QScrollBar::vertical {
                   <property name="bottomMargin">
                    <number>0</number>
                   </property>
-                  <item alignment="Qt::AlignHCenter">
+                  <item alignment="Qt::AlignHCenter|Qt::AlignTop">
                    <widget class="QFrame" name="frame_8">
                     <property name="maximumSize">
                      <size>
@@ -502,7 +565,48 @@ QScrollBar::vertical {
                       <number>100</number>
                      </property>
                      <item>
-                      <widget class="QLabel" name="firstfit_lb">
+                      <widget class="QFrame" name="frame_14">
+                       <property name="frameShape">
+                        <enum>QFrame::StyledPanel</enum>
+                       </property>
+                       <property name="frameShadow">
+                        <enum>QFrame::Raised</enum>
+                       </property>
+                       <layout class="QHBoxLayout" name="horizontalLayout_8">
+                        <property name="spacing">
+                         <number>0</number>
+                        </property>
+                        <property name="leftMargin">
+                         <number>0</number>
+                        </property>
+                        <property name="topMargin">
+                         <number>0</number>
+                        </property>
+                        <property name="rightMargin">
+                         <number>0</number>
+                        </property>
+                        <property name="bottomMargin">
+                         <number>0</number>
+                        </property>
+                        <item>
+                         <widget class="QCheckBox" name="autoRun_checkbox">
+                          <property name="font">
+                           <font>
+                            <pointsize>10</pointsize>
+                            <weight>62</weight>
+                            <bold>true</bold>
+                           </font>
+                          </property>
+                          <property name="text">
+                           <string>Auto run</string>
+                          </property>
+                         </widget>
+                        </item>
+                       </layout>
+                      </widget>
+                     </item>
+                     <item>
+                      <widget class="QPushButton" name="firstFit_btn">
                        <property name="minimumSize">
                         <size>
                          <width>0</width>
@@ -517,7 +621,7 @@ QScrollBar::vertical {
                        </property>
                        <property name="font">
                         <font>
-                         <pointsize>12</pointsize>
+                         <pointsize>11</pointsize>
                          <weight>62</weight>
                          <bold>true</bold>
                         </font>
@@ -528,22 +632,10 @@ QScrollBar::vertical {
                       </widget>
                      </item>
                      <item>
-                      <widget class="QLabel" name="nextfit_lb">
-                       <property name="minimumSize">
-                        <size>
-                         <width>0</width>
-                         <height>36</height>
-                        </size>
-                       </property>
-                       <property name="maximumSize">
-                        <size>
-                         <width>16777215</width>
-                         <height>50</height>
-                        </size>
-                       </property>
+                      <widget class="QPushButton" name="nextFit_btn">
                        <property name="font">
                         <font>
-                         <pointsize>12</pointsize>
+                         <pointsize>11</pointsize>
                          <weight>62</weight>
                          <bold>true</bold>
                         </font>
@@ -554,22 +646,10 @@ QScrollBar::vertical {
                       </widget>
                      </item>
                      <item>
-                      <widget class="QLabel" name="bestfit_lb">
-                       <property name="minimumSize">
-                        <size>
-                         <width>0</width>
-                         <height>36</height>
-                        </size>
-                       </property>
-                       <property name="maximumSize">
-                        <size>
-                         <width>16777215</width>
-                         <height>50</height>
-                        </size>
-                       </property>
+                      <widget class="QPushButton" name="bestFit_btn">
                        <property name="font">
                         <font>
-                         <pointsize>12</pointsize>
+                         <pointsize>11</pointsize>
                          <weight>62</weight>
                          <bold>true</bold>
                         </font>
@@ -580,22 +660,10 @@ QScrollBar::vertical {
                       </widget>
                      </item>
                      <item>
-                      <widget class="QLabel" name="worstfit_lb">
-                       <property name="minimumSize">
-                        <size>
-                         <width>0</width>
-                         <height>36</height>
-                        </size>
-                       </property>
-                       <property name="maximumSize">
-                        <size>
-                         <width>16777215</width>
-                         <height>50</height>
-                        </size>
-                       </property>
+                      <widget class="QPushButton" name="worstFit_btn">
                        <property name="font">
                         <font>
-                         <pointsize>12</pointsize>
+                         <pointsize>11</pointsize>
                          <weight>62</weight>
                          <bold>true</bold>
                         </font>
@@ -755,8 +823,8 @@ QScrollBar::vertical {
                             <rect>
                              <x>0</x>
                              <y>0</y>
-                             <width>512</width>
-                             <height>392</height>
+                             <width>523</width>
+                             <height>406</height>
                             </rect>
                            </property>
                            <layout class="QVBoxLayout" name="processOVBar_lo">
@@ -852,6 +920,62 @@ QScrollBar::vertical {
              <number>10</number>
             </property>
             <item>
+             <widget class="QFrame" name="frame_3">
+              <property name="minimumSize">
+               <size>
+                <width>0</width>
+                <height>50</height>
+               </size>
+              </property>
+              <property name="maximumSize">
+               <size>
+                <width>16777215</width>
+                <height>50</height>
+               </size>
+              </property>
+              <property name="frameShape">
+               <enum>QFrame::StyledPanel</enum>
+              </property>
+              <property name="frameShadow">
+               <enum>QFrame::Raised</enum>
+              </property>
+              <layout class="QVBoxLayout" name="verticalLayout_16">
+               <property name="spacing">
+                <number>0</number>
+               </property>
+               <property name="leftMargin">
+                <number>0</number>
+               </property>
+               <property name="topMargin">
+                <number>0</number>
+               </property>
+               <property name="rightMargin">
+                <number>0</number>
+               </property>
+               <property name="bottomMargin">
+                <number>0</number>
+               </property>
+               <item>
+                <widget class="QLabel" name="fitTitle_lb">
+                 <property name="font">
+                  <font>
+                   <pointsize>14</pointsize>
+                   <weight>62</weight>
+                   <bold>true</bold>
+                  </font>
+                 </property>
+                 <property name="text">
+                  <string>First Fit</string>
+                 </property>
+                 <property name="alignment">
+                  <set>Qt::AlignHCenter|Qt::AlignTop</set>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </widget>
+            </item>
+            <item>
              <widget class="QFrame" name="animationContainer">
               <property name="frameShape">
                <enum>QFrame::StyledPanel</enum>
@@ -946,7 +1070,7 @@ QScrollBar::vertical {
                           <x>0</x>
                           <y>0</y>
                           <width>168</width>
-                          <height>386</height>
+                          <height>350</height>
                          </rect>
                         </property>
                         <layout class="QVBoxLayout" name="ramBar_lo">
@@ -1004,7 +1128,7 @@ QScrollBar::vertical {
                           <x>0</x>
                           <y>0</y>
                           <width>190</width>
-                          <height>388</height>
+                          <height>352</height>
                          </rect>
                         </property>
                         <layout class="QVBoxLayout" name="tempBar_lo">
@@ -1062,7 +1186,7 @@ QScrollBar::vertical {
                           <x>0</x>
                           <y>0</y>
                           <width>190</width>
-                          <height>388</height>
+                          <height>352</height>
                          </rect>
                         </property>
                         <layout class="QVBoxLayout" name="processBar_lo">

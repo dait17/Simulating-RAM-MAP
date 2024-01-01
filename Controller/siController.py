@@ -1,4 +1,4 @@
-from PyQt5.QtCore import Qt
+from PyQt5.QtCore import Qt, QTimer
 from PyQt5.QtWidgets import QWidget
 
 from Views import Ui_DemoFrame, Ui_RamBlockDemo
@@ -17,7 +17,7 @@ class SiController(QWidget):
         self.connect_action()
         self.ram_block_list: list[RamBlock] | None = None
         self.process_list: list[Process] | None = None
-        self.speed = 300
+        self.speed = 1000
 
         self.cur_fit: BaseFit | None = None
         self.__fit_list = ['first_fit', 'next_fit', 'best_fit', 'worst_fit']
@@ -31,16 +31,30 @@ class SiController(QWidget):
         self.ui.processBar_lo.setAlignment(Qt.AlignTop)
         self.ui.tempBar_lo.setAlignment(Qt.AlignTop)
         self.ui.processOVBar_lo.setAlignment(Qt.AlignTop)
+        self.ui.autoRun_checkbox.setChecked(True)
 
     def set_data(self, ram_block_list, process_list):
         self.ram_block_list = ram_block_list
         self.process_list = process_list
 
     def connect_action(self):
+        # Kết nối nút tốc độ
         self.ui.speed075_btn.clicked.connect(self.__set_speed_x075)
         self.ui.speed1_btn.clicked.connect(self.__set_speed_x1)
         self.ui.speed125_btn.clicked.connect(self.__set_speed_x125)
+
+        # Kết nối nút tạm dừng
         self.ui.pause_btn.clicked.connect(self.pause_)
+
+        # Kết nối nút tự động chạy
+        self.ui.autoRun_checkbox.stateChanged.connect(self._change_autorun)
+
+        # Kết nối nút 'chiến lược'
+
+        self.ui.firstFit_btn.clicked.connect(self.set_first_fit)
+        self.ui.nextFit_btn.clicked.connect(self.set_next_fit)
+        self.ui.bestFit_btn.clicked.connect(self.set_best_fit)
+        self.ui.worstFit_btn.clicked.connect(self.set_worst_fit)
 
     def __set_speed_btn_default_css(self):
         self.ui.speed075_btn.setStyleSheet('background-color: #666666;')
@@ -55,7 +69,7 @@ class SiController(QWidget):
             self.cur_fit.set_time(self.speed)
 
     def __set_speed_x1(self):
-        self.speed = 500
+        self.speed = 1000
         self.__set_speed_btn_default_css()
         self.ui.speed1_btn.setStyleSheet('background-color: #999999;')
         if self.cur_fit is not None:
@@ -68,11 +82,77 @@ class SiController(QWidget):
         if self.cur_fit is not None:
             self.cur_fit.set_time(self.speed)
 
+    def __set_fit_btn_default(self):
+        css = ('border-radius: 6px;'
+               'padding: 4px 6px;'
+               'background-color: #4e4e4e;')
+
+        self.ui.firstFit_btn.setStyleSheet(css)
+        self.ui.nextFit_btn.setStyleSheet(css)
+        self.ui.bestFit_btn.setStyleSheet(css)
+        self.ui.worstFit_btn.setStyleSheet(css)
+
+    def __highlight_first_btn(self):
+        self.__set_fit_btn_default()
+        self.ui.firstFit_btn.setStyleSheet('background-color: #6e6e6e;')
+
+    def __highlight_next_btn(self):
+        self.__set_fit_btn_default()
+        self.ui.nextFit_btn.setStyleSheet('background-color: #6e6e6e;')
+
+    def __highlight_best_btn(self):
+        self.__set_fit_btn_default()
+        self.ui.bestFit_btn.setStyleSheet('background-color: #6e6e6e;')
+
+    def __highlight_worst_btn(self):
+        self.__set_fit_btn_default()
+        self.ui.worstFit_btn.setStyleSheet('background-color: #6e6e6e;')
+
+    def __set_highlight_fit_btn(self, name: str):
+        name = name.lower()
+        if name == 'first_fit':
+            self.__highlight_first_btn()
+        elif name == 'next_fit':
+            self.__highlight_next_btn()
+        elif name == 'best_fit':
+            self.__highlight_best_btn()
+        elif name == 'worst_fit':
+            self.__highlight_worst_btn()
+
+    def _change_autorun(self):
+        self.auto_run = self.ui.autoRun_checkbox.isChecked()
+
+    def set_first_fit(self):
+        self.__cur_fit_id = 0
+        self.setup_cur_fit()
+        self.__restart_fit()
+
+    def set_next_fit(self):
+        self.__cur_fit_id = 1
+        self.setup_cur_fit()
+        self.__restart_fit()
+
+    def set_best_fit(self):
+        self.__cur_fit_id = 2
+        self.setup_cur_fit()
+        self.__restart_fit()
+
+    def set_worst_fit(self):
+        self.__cur_fit_id = 3
+        self.setup_cur_fit()
+        self.__restart_fit()
+
+    def __restart_fit(self):
+        self.cur_fit.restart(self.ram_block_list, self.process_list)
+        self.pause_()
+        # self.__pausing = False
+        self.ui.pause_btn.setText('Bắt đầu')
+
     def run_(self):
         if self.ram_block_list is not None and self.process_list is not None and len(self.ram_block_list) != 0 and len(
                 self.process_list) != 0:
             try:
-                self.next_fit()
+                self.following_fit()
             except Exception as e:
                 print(e)
 
@@ -85,14 +165,30 @@ class SiController(QWidget):
     def setup_cur_fit(self):
         if self.cur_fit is not None:
             self.cur_fit.kill_oj()
-        self.cur_fit = self.cur_fit = self.__get_fit(self.__fit_list[self.__cur_fit_id])
+
+        name = self.__fit_list[self.__cur_fit_id].title()
+        self.ui.fitTitle_lb.setText(name.title())
+        self.__set_highlight_fit_btn(name)
+        self.cur_fit = self.cur_fit = self.__get_fit(name)
         self.cur_fit.set_data(self.ram_block_list, self.process_list)
         self.cur_fit.start(self.speed)
 
-    def next_fit(self):
-        if self.__cur_fit_id < len(self.__fit_list)-1:
+    def __connect_timer(self, func, t:int|None=None):
+        if t is None:
+            t = self.speed
+        timer = QTimer(self)
+        timer.timeout.connect(func)
+        timer.setSingleShot(True)
+        timer.start(t)
+
+    def following_fit(self):
+        """
+        Thiết lập chiến lược tiếp theo để mô phỏng
+        """
+        if self.__cur_fit_id < len(self.__fit_list) - 1:
             self.__cur_fit_id += 1
-            self.setup_cur_fit()
+            self.__connect_timer(self.setup_cur_fit)
+            # self.setup_cur_fit()
         else:
             self.cur_fit.pause()
 
@@ -109,7 +205,6 @@ class SiController(QWidget):
 
     def pause_(self):
         if self.cur_fit is not None:
-
             if self.cur_fit is not None and not self.cur_fit.simulating:
                 self.cur_fit.restart(self.ram_block_list, self.process_list)
                 self.ui.pause_btn.setText("Tạm dừng")

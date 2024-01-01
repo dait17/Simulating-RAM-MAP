@@ -31,17 +31,28 @@ class InputController(QWidget):
         self.ui.blue_btn.clicked.connect(self.add_process_input)
 
     def init_data(self):
-        for i in range(1,7):
-            wg = RamBlockEntry(self.count_ram(), i % 2, random.randint(20, 100), self.__move_ram_up,
-                               self.__move_ram_down,
-                               self.delete_ram_entry)
+        cap_list = [30, 20, 12]
+        pro_list = [15, 20, 12, 5]
+        for c in cap_list:
+            wg = RamBlockEntry(self.count_ram(), 0, c, self.__move_ram_up, self.__move_ram_down, self.delete_ram_entry)
             self.ui.ramInsert_lo.addWidget(wg)
 
-        for i in range(3):
-            wg = ProcessEntry(self.count_process(), random.randint(10, 100), self.__move_process_up,
+        # for i in range(1,7):
+        #     wg = RamBlockEntry(self.count_ram(), i % 2, random.randint(20, 100), self.__move_ram_up,
+        #                        self.__move_ram_down,
+        #                        self.delete_ram_entry)
+        #     self.ui.ramInsert_lo.addWidget(wg)
+
+        for p in pro_list:
+            wg = ProcessEntry(self.count_process(), p, self.__move_process_up,
                               self.__move_process_down,
                               self.delete_process_entry)
             self.ui.processInsert_lo.addWidget(wg)
+        # for i in range(3):
+        #     wg = ProcessEntry(self.count_process(), random.randint(10, 100), self.__move_process_up,
+        #                       self.__move_process_down,
+        #                       self.delete_process_entry)
+        #     self.ui.processInsert_lo.addWidget(wg)
 
     def __control_ram_input(self):
         capacity = self.ui.ramInput_le.text()

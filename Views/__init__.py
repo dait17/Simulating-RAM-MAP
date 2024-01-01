@@ -6,3 +6,4 @@ from .ProcessInput import Ui_ProcessInput
 from .DemoFrame import Ui_DemoFrame
 from .RamBlockDemo import Ui_RamBlockDemo
 from .ProcessDemo import Ui_ProcessDemo
+from .ProcessOVEntry import Ui_ProcessOVEntry

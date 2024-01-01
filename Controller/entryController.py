@@ -1,7 +1,7 @@
 from PyQt5.QtWidgets import QWidget, QVBoxLayout
 
 from Controller.Models import Process, RamBlock
-from Views import Ui_RamAreaInput, Ui_ProcessInput, Ui_RamBlockDemo, Ui_ProcessDemo
+from Views import Ui_RamAreaInput, Ui_ProcessInput, Ui_RamBlockDemo, Ui_ProcessDemo, Ui_ProcessOVEntry
 
 
 class RamBlockEntry(QWidget):
@@ -68,8 +68,8 @@ class RamBlockEntry(QWidget):
         return 0
 
     @staticmethod
-    def format_capacity(cap: float|int):
-        if type(cap)==int:
+    def format_capacity(cap: float | int):
+        if type(cap) == int:
             return str(cap)
         str_cap = str(cap)
         cap = str_cap.split('.')
@@ -118,7 +118,7 @@ class ProcessEntry(QWidget):
 
 
 class RamBlockDemo(QWidget):
-    def __init__(self, model: RamBlock, min_ram_cap: int, demon:bool=False):
+    def __init__(self, model: RamBlock, min_ram_cap: int, demon: bool = False):
         super().__init__()
         self.model = model
         self.min_ram_cap = min_ram_cap
@@ -131,12 +131,12 @@ class RamBlockDemo(QWidget):
             widget = QWidget()
             layout = QVBoxLayout(self)
             layout.addWidget(widget)
-            widget.setStyleSheet('background-color: #fff;')
-            self.__set_height(round(30 + (self.model.capacity / self.min_ram_cap)*2))
+            # widget.setStyleSheet('background-color: #fff;')
+            self.__set_height(round(30 + (self.model.capacity / self.min_ram_cap) * 2))
 
     def setup_ui(self):
         self.ui.capacity_lb.setText(str(self.model.capacity))
-        self.__set_height(round(30 + (self.model.capacity / self.min_ram_cap)*2))
+        self.__set_height(round(30 + (self.model.capacity / self.min_ram_cap) * 2))
         self.ui.endCell_lb.setText(str(self.model.end_cell))
         self.normal_effect()
 
@@ -145,7 +145,7 @@ class RamBlockDemo(QWidget):
         self.setup_ui()
 
     def high_light_effect(self):
-        if self.model.type_block == 0 or self.model.type_block==-1:
+        if self.model.type_block == 0 or self.model.type_block == -1:
             self.__append_css('#mainBodyContainer {background-color: #2ec221;}')
 
         elif self.model.type_block == 1:
@@ -158,11 +158,11 @@ class RamBlockDemo(QWidget):
             self.__append_css('#mainBodyContainer {background-color: #229818;}')
         elif self.model.type_block == 1:
             self.__append_css('#mainBodyContainer {background-color: #CB2F2F;}')
-        elif self.model.type_block==2:
+        elif self.model.type_block == 2:
             self.__append_css('#mainBodyContainer {background-color: #2b3f8c;}')
 
     def valid_effect(self):
-        pass
+        self.__append_css('#mainBodyContainer {background-color: #4ecf7f;}')
 
     def invalid_effect(self):
         pass
@@ -228,3 +228,16 @@ class ProcessDemo(QWidget):
     def __set_height(self, h: int):
         self.ui.mainBodyContainer.setMinimumHeight(h)
         self.ui.mainBodyContainer.setMaximumHeight(h)
+
+
+class ProcessOVEntry(QWidget):
+    def __init__(self, process_no, process_size, block_no):
+        super().__init__()
+        self.ui = Ui_ProcessOVEntry()
+        self.ui.setupUi(self)
+
+        self.ui.processNo_lb.setText(str(process_no))
+        self.ui.processSize_lb.setText(str(process_size))
+        self.ui.blockNo_lb.setText(str(block_no))
+
+

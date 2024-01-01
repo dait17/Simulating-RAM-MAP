@@ -1,7 +1,7 @@
 from PyQt5.QtCore import QTimer
 from PyQt5.QtWidgets import QWidget
 from .Models import *
-from .entryController import RamBlockDemo, ProcessDemo
+from .entryController import RamBlockDemo, ProcessDemo, ProcessOVEntry
 
 
 class BaseFit(QWidget):
@@ -9,7 +9,7 @@ class BaseFit(QWidget):
         super().__init__()
 
         self._speed = 1000
-        self.ram_block_list: list[RamBlock] = []
+        self.block_list: list[RamBlock] = []
         self.free_ram_block_wlist: list[RamBlockDemo] = []
         self.process_list: list[Process] = []
 
@@ -23,37 +23,75 @@ class BaseFit(QWidget):
 
         self.simulating = True
 
-        self._fitting_speed = 1000
+        self._fitting_speed = 500
         self._merge_speed = 333
         self._normal_speed = 333
 
         self.cur_ram_index = 0
         self._end_ram_index = -1
-        self.cur_free_ram_id = 0
+        self.cur_free_ram_index = 0
         self.cur_free_ram: RamBlockDemo | None = None
-
         self.cur_process: ProcessDemo | None = None
         self._timer = QTimer(self)
 
-        self._timer.timeout.connect(self.update)
+        self._timer.timeout.connect(self.run)
 
-    def _set_data(self, ram_list: list[RamBlock], process_list: list[Process]):
-        self.ram_block_list = ram_list
+    def set_data(self, ram_list: list[RamBlock], process_list: list[Process]):
+        self.block_list = [model.copy() for model in ram_list]
+        RamBlock.normalize_model(self.block_list)
         self.process_list = process_list
-        if len(self.ram_block_list) != 0 and len(self.process_list) != 0:
+
+
+    def _reset_special_para(self):
+        pass
+
+    def restart(self, ram_list, process_list):
+        self.set_data(ram_list, process_list)
+        self._reset_special_para()
+
+
+        self.run()
+
+    def run(self):
+        self._clear_ram_bar()
+        self._clear_temp_bar()
+        self._clear_bottom_bar()
+        self._clear_OV_bar()
+        self.simulating = True
+        self.cur_ram_index = 0
+        self._end_ram_index = -1
+        self.cur_free_ram_index = 0
+        self.cur_free_ram: RamBlockDemo | None = None
+        self.cur_process: ProcessDemo | None = None
+
+        if len(self.block_list) != 0 and len(self.process_list) != 0:
             self._setup_rb_entries()
             self._setup_process_entries()
 
+        self._end_ram_index = self.len_free_block - 1
+        self._connect_timer(self._control_process_entry)
+
+
+    def _first_cal(self):
+        free_ram_size = [model.capacity for model in self.block_list if model.type_block == 0]
+        process_size = [model.capacity for model in self.process_list]
+        for p in range(len(self.process_list)):
+            for r in range(len(free_ram_size)):
+                if free_ram_size[r] >= process_size[p]:
+                    free_ram_size[r] = free_ram_size[r] - process_size[p]
+                    break
+        self.min_ram_cap = min(free_ram_size)
+
     def _setup_rb_entries(self):
-        RamBlock.normalize_model(self.ram_block_list)
-        self.min_ram_cap = RamBlock.get_min(self.ram_block_list).capacity
+        RamBlock.update_block(self.block_list)
+        self.min_ram_cap = RamBlock.get_min(self.block_list).capacity
         self.min_pro_cap = Process.get_min(self.process_list).capacity
 
         self.len_process_list = len(self.process_list)
 
         self._height_list = []
         self.free_ram_block_wlist = []
-        for model in self.ram_block_list:
+        for model in self.block_list:
             rw = RamBlockDemo(model, self.min_ram_cap)
             rwl = RamBlockDemo(model, self.min_ram_cap)
             if model.type_block == 0 or model.type_block == -1:
@@ -62,7 +100,6 @@ class BaseFit(QWidget):
             # self.mother.ui.tempBar_lo.addWidget(rwl)
             self._height_list.append(rw.height())
         self.len_free_block = len(self.free_ram_block_wlist)
-        self._end_ram_index = self.len_free_block-1
 
     def _setup_process_entries(self):
         Process.normalize_model(self.process_list)
@@ -73,10 +110,17 @@ class BaseFit(QWidget):
             self.mother.ui.processBar_lo.addWidget(rw)
 
     def _reset_rb_entries(self):
+        self._clear_ram_bar()
+        self._setup_rb_entries()
+
+    def _clear_ram_bar(self):
         for i in range(self.mother.ui.ramBar_lo.count()):
             self.mother.ui.ramBar_lo.itemAt(i).widget().deleteLater()
 
-        self._setup_rb_entries()
+    def _clear_OV_bar(self):
+        for i in range(self.mother.ui.processOVBar_lo.count()):
+            self.mother.ui.processOVBar_lo.itemAt(i).widget().deleteLater()
+        self.mother.ui.processOVBar_lo.addWidget(ProcessOVEntry('Tiên trình', 'Kích thước', 'Khối nhớ trống'))
 
     def _reset_process_entries(self):
         pass
@@ -96,9 +140,6 @@ class BaseFit(QWidget):
     def play(self):
         self._timer.start(self._speed)
 
-    def update(self):
-        self._connect_timer(self._control_process_entry)
-
     def _connect_timer(self, func, t: int | None = None):
         self._timer.timeout.disconnect()
         self._timer.timeout.connect(func)
@@ -107,29 +148,42 @@ class BaseFit(QWidget):
 
     def _control_process_entry(self):
         if self.mother.ui.processBar_lo.count() == 0:
-            self.simulating = True
+            self.simulating = False
+            if self.mother.auto_run:
+                self.mother.next_fit()
+            else:
+                self.mother.ui.pause_btn.setText("Chạy lại")
             self._timer.stop()
+
             return
         self._setup_cur_process()
+        if self.len_free_block == 0:
+            self.no_allocate(self.cur_process.model)
+            self._connect_timer(self._control_process_entry)
+            return
         # self._setup_cur_process()
-        self._connect_timer(self._control_ram_entry)
-
-    def _control_ram_entry(self):
-        # if self.fitting_process:
         self._setup_cur_ram()
         self._connect_timer(self._decision)
-        if self.cur_free_ram_id == self._end_ram_index:
-            # self.fitting_process = False
-            self.cur_free_ram_id = 0
-            self._connect_timer(self._control_process_entry)
-            self._clear_temp_bar()
-            return
 
-        self.cur_free_ram_id = (self.cur_free_ram_id+1)%self.len_free_block
+    def no_allocate(self, process_model: Process):
+        ui_model = ProcessDemo(process_model, self.min_ram_cap)
+        self.mother.ui.bottomBar_lo.addWidget(ui_model)
 
+        self._add_process_overview(process_model.index, process_model.capacity, 'Không được cấp')
+
+        # Dọn tempBar
+        self._clear_temp_bar()
+
+    def _control_ram_entry(self):
+        # Thiết lập khối ram hiện tại
+        self.cur_free_ram_index = (self.cur_free_ram_index + 1) % self.len_free_block
+
+        self._setup_cur_ram()
+        # Quyết định cấp phát
+        self._connect_timer(self._decision)
 
     def _setup_cur_ram(self):
-        self.cur_free_ram = self.free_ram_block_wlist[self.cur_free_ram_id]
+        self.cur_free_ram = self.free_ram_block_wlist[self.cur_free_ram_index]
         self.cur_free_ram.high_light_effect()
         self._brick_stack(self.cur_free_ram.model.index)
 
@@ -140,19 +194,25 @@ class BaseFit(QWidget):
         temp.deleteLater()
         self.mother.ui.tempBar_lo.addWidget(self.cur_process)
         if len(self.free_ram_block_wlist) > 0:
-            # print(f'free_id: {self.free_ram_block_wlist[0].model.index}')
             self._brick_stack(self.free_ram_block_wlist[0].model.index)
 
     def _decision(self):
-        if self.cur_free_ram.model.capacity >= self.cur_process.model.capacity:
-            self._connect_timer(self._merge_action, round(self._speed * (2 / 3)))
-            return
-        self._connect_timer(self._control_ram_entry)
         self._normal_effect()
-
-        if self.cur_free_ram_id == 0:
-            noAllo = ProcessDemo(self.cur_process.model, self.min_ram_cap)
-            self.mother.ui.bottomBar_lo.addWidget(noAllo)
+        if self.cur_free_ram.model.capacity >= self.cur_process.model.capacity:
+            self.cur_free_ram.valid_effect()
+            self._connect_timer(self._merge_action, round(self._speed * (2 / 3)))
+            self.cur_free_ram_index = 0
+            return
+        else:
+            if self.cur_free_ram_index == self._end_ram_index:
+                # self.cur_free_ram_index = 0
+                # Đưa tiến trình khôngdđược cấp phát vào bottomBar
+                self.no_allocate(self.cur_process.model)
+                self.cur_free_ram_index = 0
+                # Tiếp tục cấp phát cho tiến trình tiếp theo
+                self._connect_timer(self._control_process_entry)
+            else:
+                self._connect_timer(self._control_ram_entry)
 
     def _merge_action(self):
         process_model = self.cur_process.model
@@ -160,21 +220,26 @@ class BaseFit(QWidget):
 
         if ram_model.capacity < process_model.capacity:
             return
-        self.ram_block_list[ram_model.index] = RamBlock(ram_model.index, 2,
-                                                        process_model.capacity)
-        if process_model.capacity<ram_model.capacity:
+        self.block_list[ram_model.index] = RamBlock(ram_model.index, 2,
+                                                    process_model.capacity)
+        if process_model.capacity < ram_model.capacity:
             frag_model = RamBlock(-1, -1, ram_model.capacity - process_model.capacity)
-            RamBlock.insert_model(self.ram_block_list, ram_model.index + 1, frag_model)
+            frag_model.free_index = ram_model.free_index
+            RamBlock.insert_model(self.block_list, ram_model.index + 1, frag_model)
 
-        for model in self.ram_block_list:
-            print(f'index: {model.index}; type: {model.type_block} ; cap: {model.capacity}')
+        self._add_process_overview(self.cur_process.model.index + 1, self.cur_process.model.capacity,
+                                   self.cur_free_ram.model.free_index + 1)
 
-        self._clear_temp_bar()
+        self.cur_process.deleteLater()
         self._reset_rb_entries()
         self._connect_timer(self._control_process_entry)
 
+    def _add_process_overview(self, process_no: int, process_size: int, block_no: int):
+        ov = ProcessOVEntry(process_no, process_size, block_no)
+        self.mother.ui.processOVBar_lo.addWidget(ov)
+
     def _normal_effect(self):
-        if self.cur_process is not None:
+        if self.cur_free_ram is not None:
             self.cur_free_ram.normal_effect()
 
     def kill_oj(self):
@@ -186,17 +251,22 @@ class BaseFit(QWidget):
             widget = self.mother.ui.tempBar_lo.itemAt(i).widget()
             widget.deleteLater()
 
+    def _clear_bottom_bar(self):
+        for i in range(self.mother.ui.bottomBar_lo.count()):
+            widget = self.mother.ui.bottomBar_lo.itemAt(i).widget()
+            widget.deleteLater()
+
     def _brick_stack(self, cur_rb_id: int):
         self.mother.ui.tempBar_lo.removeWidget(self.cur_process)
         if cur_rb_id > self.cur_ram_index:
             for i in range(self.cur_ram_index, cur_rb_id):
-                model = self.ram_block_list[i]
+                model = self.block_list[i]
                 temp_widget = RamBlockDemo(model, self.min_ram_cap, True)
                 self.mother.ui.tempBar_lo.addWidget(temp_widget)
         elif cur_rb_id < self.cur_ram_index:
             self._clear_temp_bar()
             for i in range(0, cur_rb_id):
-                model = self.ram_block_list[i]
+                model = self.block_list[i]
                 temp_widget = RamBlockDemo(model, self.min_ram_cap, True)
                 self.mother.ui.tempBar_lo.addWidget(temp_widget)
         self.mother.ui.tempBar_lo.addWidget(self.cur_process)
@@ -213,14 +283,96 @@ class NextFit(BaseFit):
         super().__init__(mother_ui)
 
     def _decision(self):
-        if self.cur_free_ram.model.capacity >= self.cur_process.model.capacity:
-            self._connect_timer(self._merge_action, round(self._speed * (2 / 3)))
-            if self.cur_free_ram_id == len(self.free_ram_block_wlist) - 1:
-                self.cur_free_ram_id = -1
-            return
-        self._connect_timer(self._control_ram_entry)
         self._normal_effect()
+        if self.cur_free_ram.model.capacity >= self.cur_process.model.capacity:
+            # Nếu khối nhớ vừa đủ với tiến trình thì khối nhớ bị đảy ra khỏi danh sách, cần cập nhật lại start index
+            if self.cur_free_ram.model.capacity == self.cur_process.model.capacity and self.cur_free_ram_index == self.len_free_block - 1:
+                self.cur_free_ram_index = 0
+            # Thiết lập lại điểm kết thúc
+            self._end_ram_index = (self.cur_free_ram_index - 1) % self.len_free_block
+            self.cur_free_ram.valid_effect()
+            self._connect_timer(self._merge_action, round(self._speed * (2 / 3)))
+        else:
+            if self.cur_free_ram_index == self._end_ram_index:
+                # Đưa tiến trình không được cấp phát vào bottomBar
+                self.no_allocate(self.cur_process.model)
+                self._end_ram_index = (self.cur_free_ram_index - 1) % self.len_free_block
+                # Tiếp tục cấp phát cho tiến trình tiếp theo
+                self._connect_timer(self._control_process_entry)
+            else:
+                self._connect_timer(self._control_ram_entry)
 
-        if self.cur_free_ram_id == len(self.free_ram_block_wlist) - 1:
-            noAllo = ProcessDemo(self.cur_process.model, self.min_ram_cap)
-            self.mother.ui.bottomBar_lo.addWidget(noAllo)
+
+class BestFit(BaseFit):
+    def __init__(self, mother_ui):
+        super().__init__(mother_ui)
+        self._min_block_id = -1
+
+    def _get_best_block(self):
+        return self.free_ram_block_wlist[self._min_block_id]
+
+    def _decision(self):
+        self._normal_effect()
+        if self.cur_free_ram.model.capacity >= self.cur_process.model.capacity:
+            if self._min_block_id == -1:
+                self._min_block_id = self.cur_free_ram_index
+                self.cur_free_ram.valid_effect()
+
+            elif self._get_best_block().model.capacity > self.cur_free_ram.model.capacity:
+                self._get_best_block().normal_effect()
+                self._min_block_id = self.cur_free_ram_index
+                self.cur_free_ram.valid_effect()
+
+        if self.cur_free_ram_index == self._end_ram_index:
+            if self._min_block_id != -1:
+                self.cur_free_ram = self._get_best_block()
+                self._brick_stack(self.cur_free_ram.model.index)
+                if self.cur_free_ram.model.capacity == self.cur_process.model.capacity:
+                    self._end_ram_index -= 1
+                self.cur_free_ram.valid_effect()
+                self._connect_timer(self._merge_action, round(self._speed * (2 / 3)))
+                self._min_block_id = -1
+            else:
+                # Đưa tiến trình không được cấp phát vào bottomBar
+                self.no_allocate(self.cur_process.model)
+                self._connect_timer(self._control_process_entry)
+            self.cur_free_ram_index = 0
+            # Tiếp tục cấp phát cho tiến trình tiếp theo
+
+        else:
+
+            self._connect_timer(self._control_ram_entry)
+
+
+class WorstFit(BaseFit):
+    def __init__(self, mother_ui):
+        super().__init__(mother_ui)
+        self._max_block_id = -1
+
+    def _decision(self):
+        self._normal_effect()
+        if self.cur_free_ram.model.capacity >= self.cur_process.model.capacity:
+            if self._max_block_id == -1:
+                self._max_block_id = self.cur_free_ram_index
+                self.cur_free_ram.valid_effect()
+
+            elif self.free_ram_block_wlist[self._max_block_id].model.capacity < self.cur_free_ram.model.capacity:
+                self._max_block_id = self.cur_free_ram_index
+                self.cur_free_ram.valid_effect()
+        if self.cur_free_ram_index == self._end_ram_index:
+            if self._max_block_id != -1:
+                self.cur_free_ram = self.free_ram_block_wlist[self._max_block_id]
+                self._brick_stack(self.cur_free_ram.model.index)
+                if self.cur_free_ram.model.capacity == self.cur_process.model.capacity:
+                    self._end_ram_index -= 1
+                self._connect_timer(self._merge_action, round(self._speed * (3 / 3)))
+                self._max_block_id = -1
+            else:
+                # Đưa tiến trình không được cấp phát vào bottomBar
+                self.no_allocate(self.cur_process.model)
+                self._connect_timer(self._control_process_entry)
+            self.cur_free_ram_index = 0
+            # Tiếp tục cấp phát cho tiến trình tiếp theo
+
+        else:
+            self._connect_timer(self._control_ram_entry)

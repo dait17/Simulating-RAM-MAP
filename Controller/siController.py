@@ -3,7 +3,8 @@ from PyQt5.QtWidgets import QWidget
 
 from Views import Ui_DemoFrame, Ui_RamBlockDemo
 from .Models import *
-from .fitController import BaseFit, FirstFit, NextFit
+from .fitController import BaseFit, FirstFit, NextFit, BestFit, WorstFit
+from .entryController import ProcessOVEntry
 
 
 class SiController(QWidget):
@@ -16,18 +17,20 @@ class SiController(QWidget):
         self.connect_action()
         self.ram_block_list: list[RamBlock] | None = None
         self.process_list: list[Process] | None = None
-        self.speed = 1000
+        self.speed = 300
 
         self.cur_fit: BaseFit | None = None
         self.__fit_list = ['first_fit', 'next_fit', 'best_fit', 'worst_fit']
-        self.__cur_fit_id = 0
+        self.__cur_fit_id = -1
 
         self.__pausing = False
+        self.auto_run = True
 
     def ui_turning(self):
         self.ui.ramBar_lo.setAlignment(Qt.AlignTop)
         self.ui.processBar_lo.setAlignment(Qt.AlignTop)
         self.ui.tempBar_lo.setAlignment(Qt.AlignTop)
+        self.ui.processOVBar_lo.setAlignment(Qt.AlignTop)
 
     def set_data(self, ram_block_list, process_list):
         self.ram_block_list = ram_block_list
@@ -37,6 +40,7 @@ class SiController(QWidget):
         self.ui.speed075_btn.clicked.connect(self.__set_speed_x075)
         self.ui.speed1_btn.clicked.connect(self.__set_speed_x1)
         self.ui.speed125_btn.clicked.connect(self.__set_speed_x125)
+        self.ui.pause_btn.clicked.connect(self.pause_)
 
     def __set_speed_btn_default_css(self):
         self.ui.speed075_btn.setStyleSheet('background-color: #666666;')
@@ -51,7 +55,7 @@ class SiController(QWidget):
             self.cur_fit.set_time(self.speed)
 
     def __set_speed_x1(self):
-        self.speed = 1000
+        self.speed = 500
         self.__set_speed_btn_default_css()
         self.ui.speed1_btn.setStyleSheet('background-color: #999999;')
         if self.cur_fit is not None:
@@ -73,46 +77,51 @@ class SiController(QWidget):
                 print(e)
 
     def __control_fit(self):
-        if self.__cur_fit_id<len(self.__fit_list):
+        if self.__cur_fit_id < len(self.__fit_list):
             if self.cur_fit is None or not self.cur_fit.simulating:
                 self.cur_fit = self.__get_fit(self.__fit_list[self.__cur_fit_id])
                 self.__cur_fit_id += 1
 
-    def next_fit(self):
+    def setup_cur_fit(self):
         if self.cur_fit is not None:
             self.cur_fit.kill_oj()
-        if self.__cur_fit_id<len(self.__fit_list):
-            self.__cur_fit_id += 1
-            self.cur_fit = self.cur_fit = self.__get_fit(self.__fit_list[self.__cur_fit_id])
-            self.cur_fit._set_data(self.ram_block_list, self.process_list)
-            self.cur_fit.start(self.speed)
+        self.cur_fit = self.cur_fit = self.__get_fit(self.__fit_list[self.__cur_fit_id])
+        self.cur_fit.set_data(self.ram_block_list, self.process_list)
+        self.cur_fit.start(self.speed)
 
-    def __get_fit(self, fit_name:str):
+    def next_fit(self):
+        if self.__cur_fit_id < len(self.__fit_list)-1:
+            self.__cur_fit_id += 1
+            self.setup_cur_fit()
+        else:
+            self.cur_fit.pause()
+
+    def __get_fit(self, fit_name: str):
         fit_name = fit_name.lower()
-        if fit_name=='first_fit':
-            pass
-        elif fit_name=='next_fit':
-            pass
-        elif fit_name=='best_fit':
-            pass
-        elif fit_name=='worst_fit':
-            pass
-        return FirstFit(self)
+        if fit_name == 'first_fit':
+            return FirstFit(self)
+        elif fit_name == 'next_fit':
+            return NextFit(self)
+        elif fit_name == 'best_fit':
+            return BestFit(self)
+        elif fit_name == 'worst_fit':
+            return WorstFit(self)
 
     def pause_(self):
         if self.cur_fit is not None:
-            if not self.__pausing:
+
+            if self.cur_fit is not None and not self.cur_fit.simulating:
+                self.cur_fit.restart(self.ram_block_list, self.process_list)
+                self.ui.pause_btn.setText("Tạm dừng")
+                self.__pausing = False
+            elif not self.__pausing:
                 self.cur_fit.pause()
                 self.ui.pause_btn.setText("Tiếp tục")
-                self.__pausing =True
-
+                self.__pausing = True
             else:
                 self.cur_fit.play()
                 self.ui.pause_btn.setText("Tạm dừng")
                 self.__pausing = False
-
-
-
 
     def kill_oj(self):
         if self.cur_fit is not None:

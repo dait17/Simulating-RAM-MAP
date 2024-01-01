@@ -33,7 +33,6 @@ class MainController(QMainWindow):
             self.simulationFrame.deleteLater()
         self.simulationFrame = SiController()
         self.simulationFrame.ui.back_btn.clicked.connect(self.__back_action)
-        self.simulationFrame.ui.pause_btn.clicked.connect(self.simulationFrame.pause_)
 
     def setup_page(self):
         self.ui.mainBodyContainer.addWidget(self.inputFrame)

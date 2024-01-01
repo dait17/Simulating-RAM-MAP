@@ -19,6 +19,13 @@ class RamBlock:
         self.start_cell: int | None = None
         self.end_cell: int | None = None
 
+    def copy(self):
+        cp = RamBlock(self.index, self.type_block, self.capacity)
+        cp.free_index = self.free_index
+        cp.start_cell = self.start_cell
+        cp.end_cell = self.end_cell
+        return cp
+
     def __add__(self, other) -> float | int:
         return self.capacity + other.capacity
 
@@ -42,6 +49,16 @@ class RamBlock:
                 free_index += 1
 
     @staticmethod
+    def update_block(models:list):
+        models.sort(key=lambda model: model.index)
+        cur_cell = 0
+        for model in models:
+            model.start_cell = int(cur_cell)
+            model.end_cell = cur_cell + int(model.capacity) - 1
+            cur_cell = model.end_cell + 1
+
+
+    @staticmethod
     def get_min(ram_list: list):
         return min(ram_list, key=lambda oj: oj.capacity)
 
@@ -57,6 +74,8 @@ class RamBlock:
         for m in model_list[index:]:
             m.index = index
             index += 1
+
+
 
 
 class Process:

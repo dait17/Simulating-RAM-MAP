@@ -65,7 +65,7 @@
 	background-color: #4e4e4e;
 }
 
-#ramScrollArea, #ramBar_w, #tempScrollArea, #tempBar_w, #bottomScrollArea, #bottomBar_w {
+#ramScrollArea, #ramBar_w, #tempScrollArea, #tempBar_w, #bottomScrollArea, #bottomBar_w, #fragmentOVBar, #processOVBar, #processOVScroll, #fragmentScroll {
 	background-color: rgba(255,255,255,0);
 	border-radius: 6px;
 }
@@ -73,6 +73,11 @@
 #processScrollArea, #processBar_w {
 	background-color: #5C5959;
 	border-radius: 6px;
+}
+
+QScrollBar::vertical {
+	background : lightgrey; 
+	width: 4px;
 }
 
 </string>
@@ -650,7 +655,7 @@
                     <property name="frameShadow">
                      <enum>QFrame::Raised</enum>
                     </property>
-                    <layout class="QHBoxLayout" name="horizontalLayout_7">
+                    <layout class="QVBoxLayout" name="verticalLayout_9">
                      <property name="spacing">
                       <number>0</number>
                      </property>
@@ -694,7 +699,7 @@
                     <property name="frameShadow">
                      <enum>QFrame::Raised</enum>
                     </property>
-                    <layout class="QHBoxLayout" name="horizontalLayout_8">
+                    <layout class="QVBoxLayout" name="verticalLayout_8">
                      <property name="leftMargin">
                       <number>0</number>
                      </property>
@@ -707,6 +712,70 @@
                      <property name="bottomMargin">
                       <number>0</number>
                      </property>
+                     <item>
+                      <widget class="QFrame" name="frame_13">
+                       <property name="minimumSize">
+                        <size>
+                         <width>0</width>
+                         <height>0</height>
+                        </size>
+                       </property>
+                       <property name="frameShape">
+                        <enum>QFrame::StyledPanel</enum>
+                       </property>
+                       <property name="frameShadow">
+                        <enum>QFrame::Raised</enum>
+                       </property>
+                       <layout class="QVBoxLayout" name="verticalLayout_10">
+                        <property name="spacing">
+                         <number>0</number>
+                        </property>
+                        <property name="leftMargin">
+                         <number>0</number>
+                        </property>
+                        <property name="topMargin">
+                         <number>0</number>
+                        </property>
+                        <property name="rightMargin">
+                         <number>0</number>
+                        </property>
+                        <property name="bottomMargin">
+                         <number>0</number>
+                        </property>
+                        <item>
+                         <widget class="QScrollArea" name="processOVScroll">
+                          <property name="widgetResizable">
+                           <bool>true</bool>
+                          </property>
+                          <property name="alignment">
+                           <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+                          </property>
+                          <widget class="QWidget" name="processOVBar">
+                           <property name="geometry">
+                            <rect>
+                             <x>0</x>
+                             <y>0</y>
+                             <width>512</width>
+                             <height>392</height>
+                            </rect>
+                           </property>
+                           <layout class="QVBoxLayout" name="processOVBar_lo">
+                            <property name="leftMargin">
+                             <number>12</number>
+                            </property>
+                            <property name="topMargin">
+                             <number>6</number>
+                            </property>
+                            <property name="rightMargin">
+                             <number>12</number>
+                            </property>
+                           </layout>
+                          </widget>
+                         </widget>
+                        </item>
+                       </layout>
+                      </widget>
+                     </item>
                      <item>
                       <widget class="QFrame" name="frame_12">
                        <property name="frameShape">
@@ -731,171 +800,6 @@
                         <property name="bottomMargin">
                          <number>0</number>
                         </property>
-                        <item>
-                         <widget class="QFrame" name="detailLeftTitle_fr">
-                          <property name="minimumSize">
-                           <size>
-                            <width>0</width>
-                            <height>50</height>
-                           </size>
-                          </property>
-                          <property name="maximumSize">
-                           <size>
-                            <width>16777215</width>
-                            <height>50</height>
-                           </size>
-                          </property>
-                          <property name="frameShape">
-                           <enum>QFrame::StyledPanel</enum>
-                          </property>
-                          <property name="frameShadow">
-                           <enum>QFrame::Raised</enum>
-                          </property>
-                          <layout class="QVBoxLayout" name="verticalLayout_8">
-                           <property name="spacing">
-                            <number>0</number>
-                           </property>
-                           <property name="leftMargin">
-                            <number>20</number>
-                           </property>
-                           <property name="topMargin">
-                            <number>0</number>
-                           </property>
-                           <property name="rightMargin">
-                            <number>20</number>
-                           </property>
-                           <property name="bottomMargin">
-                            <number>0</number>
-                           </property>
-                           <item alignment="Qt::AlignVCenter">
-                            <widget class="QLabel" name="label_6">
-                             <property name="font">
-                              <font>
-                               <pointsize>10</pointsize>
-                               <weight>62</weight>
-                               <bold>true</bold>
-                              </font>
-                             </property>
-                             <property name="text">
-                              <string>Được cấp phát bộ nhớ</string>
-                             </property>
-                             <property name="alignment">
-                              <set>Qt::AlignHCenter|Qt::AlignTop</set>
-                             </property>
-                             <property name="wordWrap">
-                              <bool>true</bool>
-                             </property>
-                            </widget>
-                           </item>
-                          </layout>
-                         </widget>
-                        </item>
-                        <item>
-                         <widget class="QFrame" name="frame_15">
-                          <property name="frameShape">
-                           <enum>QFrame::StyledPanel</enum>
-                          </property>
-                          <property name="frameShadow">
-                           <enum>QFrame::Raised</enum>
-                          </property>
-                         </widget>
-                        </item>
-                       </layout>
-                      </widget>
-                     </item>
-                     <item>
-                      <widget class="QFrame" name="frame_13">
-                       <property name="frameShape">
-                        <enum>QFrame::StyledPanel</enum>
-                       </property>
-                       <property name="frameShadow">
-                        <enum>QFrame::Raised</enum>
-                       </property>
-                       <layout class="QVBoxLayout" name="verticalLayout_10">
-                        <property name="spacing">
-                         <number>0</number>
-                        </property>
-                        <property name="leftMargin">
-                         <number>0</number>
-                        </property>
-                        <property name="topMargin">
-                         <number>0</number>
-                        </property>
-                        <property name="rightMargin">
-                         <number>0</number>
-                        </property>
-                        <property name="bottomMargin">
-                         <number>0</number>
-                        </property>
-                        <item>
-                         <widget class="QFrame" name="detailLeftTitle_fr_2">
-                          <property name="minimumSize">
-                           <size>
-                            <width>0</width>
-                            <height>50</height>
-                           </size>
-                          </property>
-                          <property name="maximumSize">
-                           <size>
-                            <width>16777215</width>
-                            <height>50</height>
-                           </size>
-                          </property>
-                          <property name="frameShape">
-                           <enum>QFrame::StyledPanel</enum>
-                          </property>
-                          <property name="frameShadow">
-                           <enum>QFrame::Raised</enum>
-                          </property>
-                          <layout class="QVBoxLayout" name="verticalLayout_9">
-                           <property name="spacing">
-                            <number>0</number>
-                           </property>
-                           <property name="leftMargin">
-                            <number>20</number>
-                           </property>
-                           <property name="topMargin">
-                            <number>0</number>
-                           </property>
-                           <property name="rightMargin">
-                            <number>20</number>
-                           </property>
-                           <property name="bottomMargin">
-                            <number>0</number>
-                           </property>
-                           <item alignment="Qt::AlignVCenter">
-                            <widget class="QLabel" name="label_7">
-                             <property name="font">
-                              <font>
-                               <pointsize>10</pointsize>
-                               <weight>62</weight>
-                               <bold>true</bold>
-                              </font>
-                             </property>
-                             <property name="text">
-                              <string>Không được cấp phát bộ nhớ</string>
-                             </property>
-                             <property name="alignment">
-                              <set>Qt::AlignHCenter|Qt::AlignTop</set>
-                             </property>
-                             <property name="wordWrap">
-                              <bool>true</bool>
-                             </property>
-                            </widget>
-                           </item>
-                          </layout>
-                         </widget>
-                        </item>
-                        <item>
-                         <widget class="QFrame" name="frame_16">
-                          <property name="frameShape">
-                           <enum>QFrame::StyledPanel</enum>
-                          </property>
-                          <property name="frameShadow">
-                           <enum>QFrame::Raised</enum>
-                          </property>
-                         </widget>
-                        </item>
                        </layout>
                       </widget>
                      </item>
@@ -1041,7 +945,7 @@
                          <rect>
                           <x>0</x>
                           <y>0</y>
-                          <width>197</width>
+                          <width>168</width>
                           <height>386</height>
                          </rect>
                         </property>
@@ -1099,7 +1003,7 @@
                          <rect>
                           <x>0</x>
                           <y>0</y>
-                          <width>220</width>
+                          <width>190</width>
                           <height>388</height>
                          </rect>
                         </property>
@@ -1157,7 +1061,7 @@
                          <rect>
                           <x>0</x>
                           <y>0</y>
-                          <width>219</width>
+                          <width>190</width>
                           <height>388</height>
                          </rect>
                         </property>
@@ -1233,7 +1137,7 @@
                       <rect>
                        <x>0</x>
                        <y>0</y>
-                       <width>756</width>
+                       <width>668</width>
                        <height>98</height>
                       </rect>
                      </property>

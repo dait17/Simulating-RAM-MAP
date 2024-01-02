@@ -147,7 +147,7 @@ class SiController(QWidget):
     def __restart_fit(self):
         self.cur_fit.restart(self.ram_block_list, self.process_list)
         self.pause_()
-        # self.__pausing = False
+        self.__pausing = False
         self.ui.pause_btn.setText('Bắt đầu')
 
     def run_(self):

@@ -39,6 +39,7 @@ class BaseFit(QWidget):
         self.block_list = [model.copy() for model in ram_list]
         RamBlock.normalize_model(self.block_list)
         self.process_list = process_list
+        self._first_cal()
 
     def _reset_special_para(self):
         pass
@@ -81,7 +82,6 @@ class BaseFit(QWidget):
 
     def _setup_rb_entries(self):
         RamBlock.update_block(self.block_list)
-        self.min_ram_cap = RamBlock.get_min(self.block_list).capacity
         self.min_pro_cap = Process.get_min(self.process_list).capacity
 
         self.len_process_list = len(self.process_list)
@@ -186,6 +186,9 @@ class BaseFit(QWidget):
         self.cur_free_ram = self.free_ram_block_wlist[self.cur_free_ram_index]
         self.cur_free_ram.high_light_effect()
         self._brick_stack(self.cur_free_ram.model.index)
+        self.mother.ui.ramScrollArea.ensureWidgetVisible(self.cur_free_ram, yMargin=100)
+        self.mother.ui.tempScrollArea.ensureWidgetVisible(self.cur_process, yMargin=100)
+
 
     def _setup_cur_process(self):
         temp = self.mother.ui.processBar_lo.itemAt(0).widget()
@@ -310,6 +313,22 @@ class BestFit(BaseFit):
 
     def _get_best_block(self):
         return self.free_ram_block_wlist[self._min_block_id]
+
+    def _first_cal(self):
+        free_ram_size = [model.capacity for model in self.block_list if model.type_block == 0]
+        process_size = [model.capacity for model in self.process_list]
+        for p in range(len(self.process_list)):
+            min_block_id = -1
+            for r in range(len(free_ram_size)):
+                if free_ram_size[r] >= process_size[p]:
+                    if min_block_id==-1:
+                        min_block_id = r
+                    elif free_ram_size[r]<free_ram_size[min_block_id]:
+                        min_block_id = r
+            if min_block_id!=-1:
+                free_ram_size[min_block_id] = free_ram_size[min_block_id] - process_size[p]
+        self.min_ram_cap = min(free_ram_size)
+        print(f'min: {self.min_ram_cap}')
 
     def _decision(self):
         self._normal_effect()

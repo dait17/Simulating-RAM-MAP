@@ -56,6 +56,8 @@ class SiController(QWidget):
         self.ui.bestFit_btn.clicked.connect(self.set_best_fit)
         self.ui.worstFit_btn.clicked.connect(self.set_worst_fit)
 
+
+
     def __set_speed_btn_default_css(self):
         self.ui.speed075_btn.setStyleSheet('background-color: #666666;')
         self.ui.speed1_btn.setStyleSheet('background-color: #666666;')

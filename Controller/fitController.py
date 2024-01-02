@@ -5,6 +5,11 @@ from .entryController import RamBlockDemo, ProcessDemo, ProcessOVEntry
 
 
 class BaseFit(QWidget):
+    """
+    Class dùng để kiểm soát và xử lý giao diện khi mô phỏng, bao gồm hiển thị:
+    các khối nhớ, các tiến trình, thông báo trạng thái của từng tiến trình.
+    """
+
     def __init__(self, mother: QWidget):
         super().__init__()
 
@@ -36,12 +41,23 @@ class BaseFit(QWidget):
         self._timer.timeout.connect(self.run)
 
     def set_data(self, ram_list: list[RamBlock], process_list: list[Process]):
+        """
+        Thiết lập dữ liệu về danh sách khối nhớ và danh sách tiến trình
+        :param ram_list:
+        :param process_list:
+        :return:
+        """
         self.block_list = [model.copy() for model in ram_list]
         RamBlock.normalize_model(self.block_list)
         self.process_list = process_list
         self._first_cal()
 
     def _set_min_ram(self, ram_list):
+        """
+        Tìm và thết lập khối nhớ nhỏ nhất, giúp hiển thị tỉ lệ của từng vùng nhớ trực quan hơn
+        :param ram_list:
+        :return:
+        """
         min_size = -1
         for size in ram_list:
             if min_size == -1 and size != 0:
@@ -54,12 +70,21 @@ class BaseFit(QWidget):
         pass
 
     def restart(self, ram_list, process_list):
+        """
+        Chạy lại một chiến lược
+        :param ram_list:
+        :param process_list:
+        :return:
+        """
         self.set_data(ram_list, process_list)
         self._reset_special_para()
 
         self.run()
 
     def run(self):
+        """
+        Bắt đầu chạy chiến lược
+        """
         self._clear_ram_bar()
         self._clear_process_bar()
         self._clear_temp_bar()
@@ -80,6 +105,10 @@ class BaseFit(QWidget):
         self._connect_timer(self._control_process_entry)
 
     def _first_cal(self):
+        """
+        Tính toán trước qua trình cấp phát để tìm ra khối nh nhỏ nhất,
+        giúp hiển thị tỉ lệ của các khối nhớ và tiến trình trực quan hơn.
+        """
         free_ram_size = [model.capacity for model in self.block_list if model.type_block == 0]
         process_size = [model.capacity for model in self.process_list]
         for p in range(len(self.process_list)):
@@ -90,6 +119,10 @@ class BaseFit(QWidget):
         self._set_min_ram(free_ram_size)
 
     def _setup_rb_entries(self):
+        """
+        Thiết lập giao diện hiển thị cho các khối nhớ
+        :return:
+        """
         RamBlock.update_block(self.block_list)
         self.min_pro_cap = Process.get_min(self.process_list).capacity
 
@@ -106,6 +139,10 @@ class BaseFit(QWidget):
         self.len_free_block = len(self.free_ram_block_wlist)
 
     def _setup_process_entries(self):
+        """
+        Thiết lập giao diện hiển thị cho các tiến trình
+        :return:
+        """
         Process.normalize_model(self.process_list)
 
         for model in self.process_list:
@@ -114,18 +151,34 @@ class BaseFit(QWidget):
             self.mother.ui.processBar_lo.addWidget(rw)
 
     def _reset_rb_entries(self):
+        """
+        Tái thiết lập giao diện hiển thị cho các khối nhớ
+        :return:
+        """
         self._clear_ram_bar()
         self._setup_rb_entries()
 
     def _clear_ram_bar(self):
+        """
+        Xoá giao diện của các khối nhớ đang được hiển thị
+        :return:
+        """
         for i in range(self.mother.ui.ramBar_lo.count()):
             self.mother.ui.ramBar_lo.itemAt(i).widget().deleteLater()
 
     def _clear_process_bar(self):
+        """
+        Xoá giao diện của các tiến trình đang được hiển thị
+        :return:
+        """
         for i in range(self.mother.ui.processBar_lo.count()):
             self.mother.ui.processBar_lo.itemAt(i).widget().deleteLater()
 
     def _clear_OV_bar(self):
+        """
+        Xoá giao diện chi tiết trạng thái của các tiến trình
+        :return:
+        """
         for i in range(self.mother.ui.processOVBar_lo.count()):
             self.mother.ui.processOVBar_lo.itemAt(i).widget().deleteLater()
         self.mother.ui.processOVBar_lo.addWidget(ProcessOVEntry('Tiên trình', 'Kích thước', 'Khối nhớ trống'))
@@ -134,28 +187,45 @@ class BaseFit(QWidget):
         pass
 
     def set_time(self, t: int):
+        """
+        Thiết lập thời gian mô phỏng
+        """
         self._speed = t
         self._merge_speed = round(self._speed * (2 / 3))
 
     def start(self, t: int | None = None):
+        """
+        Bắt đầu khởi chạy mô phỏng
+        """
         if t is not None:
             self.set_time(t)
             self._timer.start(t)
         pass
 
-    def pause(self):
-        self._timer.stop()
-
     def play(self):
         self._timer.start(self._speed)
 
+    def pause(self):
+        """
+        Tạm dừng mô phỏng
+        """
+        self._timer.stop()
+
     def _connect_timer(self, func, t: int | None = None):
+        """
+        Kết nối phương thức với bộ đếm giờ, phương thức sẽ được gọi sau t mili giây,
+        nếu t=None thì sẽ chạy theo thời gian mặc đinh.
+        """
         self._timer.timeout.disconnect()
         self._timer.timeout.connect(func)
         speed = t if t is not None else self._speed
         self._timer.start(speed)
 
     def _control_process_entry(self):
+        """
+        Kiểm soát tiến trình
+        :return:
+        """
         if self.mother.ui.processBar_lo.count() == 0:
             self.simulating = False
             if self.mother.auto_run:
@@ -175,6 +245,9 @@ class BaseFit(QWidget):
         self._connect_timer(self._decision)
 
     def no_allocate(self, process_model: Process):
+        """
+        Thiết lập tiến trình không được cấp phát
+        """
         ui_model = ProcessDemo(process_model, self.min_ram_cap)
         self.mother.ui.bottomBar_lo.addWidget(ui_model)
 
@@ -184,6 +257,9 @@ class BaseFit(QWidget):
         self._clear_temp_bar()
 
     def _control_ram_entry(self):
+        """
+        Kiểm soát khối nhớ
+        """
         # Thiết lập khối ram hiện tại
         self.cur_free_ram_index = (self.cur_free_ram_index + 1) % self.len_free_block
 
@@ -192,6 +268,10 @@ class BaseFit(QWidget):
         self._connect_timer(self._decision)
 
     def _setup_cur_ram(self):
+        """
+        Thiết lập khối nhớ hiển tại
+        :return:
+        """
         self.cur_free_ram = self.free_ram_block_wlist[self.cur_free_ram_index]
         self.cur_free_ram.high_light_effect()
         self._brick_stack(self.cur_free_ram.model.index)
@@ -199,6 +279,10 @@ class BaseFit(QWidget):
         self.mother.ui.tempScrollArea.ensureWidgetVisible(self.cur_process, yMargin=100)
 
     def _setup_cur_process(self):
+        """
+        Thiết lập thông số cho tiến trình hiện tại
+        :return:
+        """
         temp = self.mother.ui.processBar_lo.itemAt(0).widget()
         self.mother.ui.processBar_lo.removeWidget(temp)
         self.cur_process = ProcessDemo(temp.model, temp.min_ram_cap)
@@ -208,6 +292,9 @@ class BaseFit(QWidget):
             self._brick_stack(self.free_ram_block_wlist[0].model.index)
 
     def _decision(self):
+        """
+        Đưa ra quyết định cấp phát bộ nhớ cho tiến trình, mỗi chiến lược có một các quyết định khác nhau
+        """
         self._normal_effect()
         if self.cur_free_ram.model.capacity >= self.cur_process.model.capacity:
             self.cur_free_ram.valid_effect()
@@ -226,6 +313,9 @@ class BaseFit(QWidget):
                 self._connect_timer(self._control_ram_entry)
 
     def _merge_action(self):
+        """
+        Thay đổi giao diện của khối nhớ khi thực hiện cấp phát khối nhớ cho tiến trình.
+        """
         process_model = self.cur_process.model
         ram_model = self.cur_free_ram.model
 
@@ -246,6 +336,9 @@ class BaseFit(QWidget):
         self._connect_timer(self._control_process_entry)
 
     def _add_process_overview(self, process_no: int, process_size: int, block_no: int):
+        """
+        Thêm giao diện cho phần chi tiết cấp phát
+        """
         ov = ProcessOVEntry(process_no, process_size, block_no)
         self.mother.ui.processOVBar_lo.addWidget(ov)
 
@@ -268,6 +361,11 @@ class BaseFit(QWidget):
             widget.deleteLater()
 
     def _brick_stack(self, cur_rb_id: int):
+        """
+        (Xếp gạch) Thêm các giao diện phụ vào phần tạm để giúp hiển thị tiến trình hiện tại khi mô phỏng được trực quan hơn.
+        :param cur_rb_id:
+        :return:
+        """
         self.mother.ui.tempBar_lo.removeWidget(self.cur_process)
         if cur_rb_id > self.cur_ram_index:
             for i in range(self.cur_ram_index, cur_rb_id):

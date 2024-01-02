@@ -7,9 +7,14 @@ class RamBlock:
         """
 
         :param index:
-        :param type_block: -1:fragment; 0:free; 1:used; 2:trust allocation
+        :param type_block:
+        -1:khối nhớ bị phân mảnh sau khi cấp phát cho tiến tình;
+        0:Khối nhớ trống;
+        1:Khối nhớ đã được sử dụng trước đó;
+        2:Khối nhớ được cacps phát cho tiến trình khi chạy mô phỏng
         :param capacity:
         """
+        # Dung lượng khối nhớ
         self.capacity = capacity
         self.type_block = type_block
         self.index = index
@@ -76,8 +81,6 @@ class RamBlock:
             index += 1
 
 
-
-
 class Process:
     def __init__(self, index: int, capacity: int):
         self.capacity = capacity
@@ -99,8 +102,3 @@ class Process:
         return min(process_list, key=lambda oj: oj.capacity)
 
 
-if __name__ == '__main__':
-    a = RamBlock(0, 0, 12)
-    b = RamBlock(1, 1, 8)
-
-    print(RamBlock.sum_capacity([a, b]))

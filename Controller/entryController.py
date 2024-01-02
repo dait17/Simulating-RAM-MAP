@@ -5,6 +5,9 @@ from Views import Ui_RamAreaInput, Ui_ProcessInput, Ui_RamBlockDemo, Ui_ProcessD
 
 
 class RamBlockEntry(QWidget):
+    """
+    Class dùng để hiển thị khối nhớ được thêm vào
+    """
     def __init__(self, index: int, type_block: int, capacity: int, up_func, down_func, del_func):
         super().__init__()
         self.index = index
@@ -29,11 +32,17 @@ class RamBlockEntry(QWidget):
         self.leaveEvent = self.__normal_ui
 
     def __normal_ui(self, event):
+        """
+        Thiết lập trạng thái bình thường (khi không được hover)
+        """
         self.ui.up_btn.hide()
         self.ui.down_btn.hide()
         self.ui.del_btn.hide()
 
     def __hover_ui(self, event):
+        """
+        Thiết lập trạng thái khi đưc hover
+        """
         self.ui.up_btn.show()
         self.ui.down_btn.show()
         self.ui.del_btn.show()
@@ -44,6 +53,9 @@ class RamBlockEntry(QWidget):
         self.setStyleSheet(new_css)
 
     def setup_ui(self):
+        """
+        Thiết lập lại giao diện dựa trên loại khối nhớ
+        """
         self.__normal_ui(None)
         self.ui.capacity_lb.setText(str(self.capacity))
         if self.type_block == 0:
@@ -70,16 +82,12 @@ class RamBlockEntry(QWidget):
         if inp.isdecimal():
             return True
         return False
-        # sp = inp.split('.')
-        # if len(sp) == 2 and sp[0].isdecimal() and sp[1].isdecimal():
-        #     return True
-        # elif len(sp) == 1 and sp[0].isdecimal():
-        #     return True
-        # else:
-        #     return False
 
 
 class ProcessEntry(QWidget):
+    """
+    Class dùng để hiển thị tiến trình được thêm vào
+    """
     def __init__(self, index: int, capacity: int, up_func, down_func, del_func):
         super().__init__()
         self.index = index
@@ -97,7 +105,7 @@ class ProcessEntry(QWidget):
 
     def setup_obj(self):
         self.ui.capacity_lb.setText(str(self.capacity))
-        self.ui.index_lb.setText(str(self.index))
+        self.ui.index_lb.setText(str(self.index+1))
 
     def __normal_ui(self, event):
         self.ui.up_btn.hide()
@@ -133,6 +141,9 @@ class ProcessEntry(QWidget):
 
 
 class RamBlockDemo(QWidget):
+    """
+    Class dùng để hiển thị khối nhớ khi mô phỏng
+    """
     def __init__(self, model: RamBlock, min_ram_cap: int, demon: bool = False):
         super().__init__()
         self.model = model
@@ -163,6 +174,9 @@ class RamBlockDemo(QWidget):
         self.setup_ui()
 
     def high_light_effect(self):
+        """
+        HIệu ứng làm nổi bật khối nhớ
+        """
         if self.model.type_block == 0 or self.model.type_block == -1:
             self.__append_css('#mainBodyContainer {background-color: #2ec221;}')
 
@@ -170,6 +184,10 @@ class RamBlockDemo(QWidget):
             pass
 
     def normal_effect(self):
+        """
+        Hiệu ứng bình thường
+        :return:
+        """
         if self.model.type_block == -1:
             self.__append_css('#mainBodyContainer {background-color: #72227a;}')
         elif self.model.type_block == 0:
@@ -180,10 +198,11 @@ class RamBlockDemo(QWidget):
             self.__append_css('#mainBodyContainer {background-color: #2b3f8c;}')
 
     def valid_effect(self):
+        """
+        Hiệu ứng khổi nhớ được đánh dấu là hợp lệ
+        :return:
+        """
         self.__append_css('#mainBodyContainer {background-color: #4ecf7f;}')
-
-    def invalid_effect(self):
-        pass
 
     def __set_default_css(self):
         css = ('* {'
@@ -205,6 +224,9 @@ class RamBlockDemo(QWidget):
 
 
 class ProcessDemo(QWidget):
+    """
+    Class dùng để hiển thị tiến trình khi mô phỏng
+    """
     def __init__(self, model: Process, min_ram_cap: int):
         super().__init__()
         self.ui = Ui_ProcessDemo()
@@ -224,15 +246,6 @@ class ProcessDemo(QWidget):
         self.model = model
         self.setup_ui()
 
-    def high_light_effect(self):
-        pass
-
-    def valid_effect(self):
-        pass
-
-    def invalid_effect(self):
-        pass
-
     def __set_default_css(self):
         css = ('* {'
                'font-weight: 500;'
@@ -246,11 +259,16 @@ class ProcessDemo(QWidget):
         self.setStyleSheet(old_css + '\n' + css)
 
     def __set_height(self, h: int):
+        if h >100:
+            h = 100
         self.ui.mainBodyContainer.setMinimumHeight(h)
         self.ui.mainBodyContainer.setMaximumHeight(h)
 
 
 class ProcessOVEntry(QWidget):
+    """
+    Class dùng để hiển thị thông báo trạng thái cấp phát của một tiến trình
+    """
     def __init__(self, process_no, process_size, block_no):
         super().__init__()
         self.ui = Ui_ProcessOVEntry()

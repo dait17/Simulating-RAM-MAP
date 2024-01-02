@@ -8,6 +8,9 @@ from .entryController import ProcessOVEntry
 
 
 class SiController(QWidget):
+    """
+    Class dùng để hiển thị giao diện mô phỏng
+    """
     def __init__(self):
         super().__init__()
         self.ui = Ui_DemoFrame()
@@ -27,6 +30,9 @@ class SiController(QWidget):
         self.auto_run = True
 
     def ui_turning(self):
+        """
+        Tinh chỉnh lại giao diện
+        """
         self.ui.ramBar_lo.setAlignment(Qt.AlignTop)
         self.ui.processBar_lo.setAlignment(Qt.AlignTop)
         self.ui.tempBar_lo.setAlignment(Qt.AlignTop)
@@ -34,10 +40,16 @@ class SiController(QWidget):
         self.ui.autoRun_checkbox.setChecked(True)
 
     def set_data(self, ram_block_list, process_list):
+        """
+        Thiết lập dữ liệu cho quá trình mô phỏng
+        """
         self.ram_block_list = ram_block_list
         self.process_list = process_list
 
     def connect_action(self):
+        """
+        Kết nối sự kiện cho các nút bấm
+        """
         # Kết nối nút tốc độ
         self.ui.speed075_btn.clicked.connect(self.__set_speed_x075)
         self.ui.speed1_btn.clicked.connect(self.__set_speed_x1)
@@ -57,11 +69,17 @@ class SiController(QWidget):
         self.ui.worstFit_btn.clicked.connect(self.set_worst_fit)
 
     def __set_speed_btn_default_css(self):
+        """
+        Thiết lập css mặc định cho các nút bấm chỉnh tốc đọ
+        """
         self.ui.speed075_btn.setStyleSheet('background-color: #666666;')
         self.ui.speed1_btn.setStyleSheet('background-color: #666666;')
         self.ui.speed125_btn.setStyleSheet('background-color: #666666;')
 
     def __set_speed_x075(self):
+        """
+        Thiết lập hiệu ứng cho nút chỉnh tốc độ 0.75, và thiết lập tốc độ mô phỏng về 1250 ms
+        """
         self.speed = 1250
         self.__set_speed_btn_default_css()
         self.ui.speed075_btn.setStyleSheet('background-color: #999999;')
@@ -69,6 +87,9 @@ class SiController(QWidget):
             self.cur_fit.set_time(self.speed)
 
     def __set_speed_x1(self):
+        """
+        Thiết lập hiệu ứng cho nút chỉnh tốc độ 1, và thiết lập tốc độ mô phỏng về 1000 ms
+        """
         self.speed = 1000
         self.__set_speed_btn_default_css()
         self.ui.speed1_btn.setStyleSheet('background-color: #999999;')
@@ -76,6 +97,9 @@ class SiController(QWidget):
             self.cur_fit.set_time(self.speed)
 
     def __set_speed_x125(self):
+        """
+        Thiết lập hiệu ứng cho nút chỉnh tốc độ 1.25, và thiết lập tốc độ mô phỏng về 750 ms
+        """
         self.speed = 750
         self.__set_speed_btn_default_css()
         self.ui.speed125_btn.setStyleSheet('background-color: #999999;')
@@ -83,6 +107,9 @@ class SiController(QWidget):
             self.cur_fit.set_time(self.speed)
 
     def __set_fit_btn_default(self):
+        """
+        Thiết lập hiệu ứng (css) mặc định cho các nút chọn chiến lược
+        """
         css = ('border-radius: 6px;'
                'padding: 4px 6px;'
                'background-color: #4e4e4e;')
@@ -120,35 +147,56 @@ class SiController(QWidget):
             self.__highlight_worst_btn()
 
     def _change_autorun(self):
+        """
+        Thay đổi trạng thái tự động chạy
+        """
         self.auto_run = self.ui.autoRun_checkbox.isChecked()
 
     def set_first_fit(self):
+        """
+        Thiết lập mô phỏng cho chiến lược First Fit.
+        """
         self.__cur_fit_id = 0
         self.setup_cur_fit()
         self.__restart_fit()
 
     def set_next_fit(self):
+        """
+        Thiết lập mô phỏng cho chiến lược Next Fit.
+        """
         self.__cur_fit_id = 1
         self.setup_cur_fit()
         self.__restart_fit()
 
     def set_best_fit(self):
+        """
+        Thiết lập mô phỏng cho chiến lược Best Fit.
+        """
         self.__cur_fit_id = 2
         self.setup_cur_fit()
         self.__restart_fit()
 
     def set_worst_fit(self):
+        """
+        Thiết lập mô phỏng cho chiến lược Worst Fit.
+        """
         self.__cur_fit_id = 3
         self.setup_cur_fit()
         self.__restart_fit()
 
     def __restart_fit(self):
+        """
+        Khởi chạy lại chiến lược hiện tại
+        """
         self.cur_fit.restart(self.ram_block_list, self.process_list)
         self.cur_fit.pause()
         self.__pausing = True
         self.ui.pause_btn.setText('Bắt đầu')
 
     def run_(self):
+        """
+        Bắt đầu chạy mô phỏng. (Phương thức được gọi khi ấm nút bắt đầu chạy tại giao diện nhập)
+        """
         if self.ram_block_list is not None and self.process_list is not None and len(self.ram_block_list) != 0 and len(
                 self.process_list) != 0:
             try:
@@ -157,12 +205,19 @@ class SiController(QWidget):
                 print(e)
 
     def __control_fit(self):
+        """
+        Kiểm soát thứ tự mô phỏng của các chiến lược
+        """
         if self.__cur_fit_id < len(self.__fit_list):
             if self.cur_fit is None or not self.cur_fit.simulating:
                 self.cur_fit = self.__get_fit(self.__fit_list[self.__cur_fit_id])
                 self.__cur_fit_id += 1
 
     def setup_cur_fit(self):
+        """
+        Thiết lập mô phỏng cho chiến lược được họn hiện tại dựa trên chỉ mục.
+        :return:
+        """
         if self.cur_fit is not None:
             self.cur_fit.kill_oj()
 
@@ -174,6 +229,9 @@ class SiController(QWidget):
         self.cur_fit.start(self.speed)
 
     def __connect_timer(self, func, t:int|None=None):
+        """
+        Kết nối phương thức với bộ đếm thời gian, sau khoản thời gian t phương thức sẽ được gọi.
+        """
         if t is None:
             t = self.speed
         timer = QTimer(self)
@@ -204,6 +262,9 @@ class SiController(QWidget):
             return WorstFit(self)
 
     def pause_(self):
+        """
+        Chức năng tạm dừng
+        """
         if self.cur_fit is not None:
             if self.cur_fit is not None and not self.cur_fit.simulating:
                 self.cur_fit.restart(self.ram_block_list, self.process_list)
@@ -219,5 +280,8 @@ class SiController(QWidget):
                 self.__pausing = False
 
     def kill_oj(self):
+        """
+        Phá huỷ tiến trình hiện tại
+        """
         if self.cur_fit is not None:
             self.cur_fit.kill_oj()

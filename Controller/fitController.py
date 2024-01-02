@@ -41,6 +41,15 @@ class BaseFit(QWidget):
         self.process_list = process_list
         self._first_cal()
 
+    def _set_min_ram(self, ram_list):
+        min_size = -1
+        for size in ram_list:
+            if min_size == -1 and size != 0:
+                min_size = size
+            elif size < min_size and size != 0:
+                min_size = size
+        self.min_ram_cap = min_size
+
     def _reset_special_para(self):
         pass
 
@@ -78,7 +87,7 @@ class BaseFit(QWidget):
                 if free_ram_size[r] >= process_size[p]:
                     free_ram_size[r] = free_ram_size[r] - process_size[p]
                     break
-        self.min_ram_cap = min(free_ram_size)
+        self._set_min_ram(free_ram_size)
 
     def _setup_rb_entries(self):
         RamBlock.update_block(self.block_list)
@@ -126,7 +135,7 @@ class BaseFit(QWidget):
 
     def set_time(self, t: int):
         self._speed = t
-        self._merge_speed = round(self._speed*(2/3))
+        self._merge_speed = round(self._speed * (2 / 3))
 
     def start(self, t: int | None = None):
         if t is not None:
@@ -188,7 +197,6 @@ class BaseFit(QWidget):
         self._brick_stack(self.cur_free_ram.model.index)
         self.mother.ui.ramScrollArea.ensureWidgetVisible(self.cur_free_ram, yMargin=100)
         self.mother.ui.tempScrollArea.ensureWidgetVisible(self.cur_process, yMargin=100)
-
 
     def _setup_cur_process(self):
         temp = self.mother.ui.processBar_lo.itemAt(0).widget()
@@ -285,6 +293,27 @@ class NextFit(BaseFit):
     def __init__(self, mother_ui: QWidget):
         super().__init__(mother_ui)
 
+    def _first_cal(self):
+        free_ram_size = [model.capacity for model in self.block_list if model.type_block == 0]
+        process_size = [model.capacity for model in self.process_list]
+        len_block = len(free_ram_size)
+        j = 0
+        t = len_block - 1
+        for p in range(len(self.process_list)):
+            while j < len_block:
+                if free_ram_size[j] >= process_size[p]:
+                    free_ram_size[j] = free_ram_size[j] - process_size[p]
+                    t = (j - 1) % len_block
+                    break
+
+                if t == j:
+                    t = (j - 1) % len_block
+                    break
+
+                j = (j + 1) % len_block
+
+        self._set_min_ram(free_ram_size)
+
     def _decision(self):
         self._normal_effect()
         if self.cur_free_ram.model.capacity >= self.cur_process.model.capacity:
@@ -321,14 +350,13 @@ class BestFit(BaseFit):
             min_block_id = -1
             for r in range(len(free_ram_size)):
                 if free_ram_size[r] >= process_size[p]:
-                    if min_block_id==-1:
+                    if min_block_id == -1:
                         min_block_id = r
-                    elif free_ram_size[r]<free_ram_size[min_block_id]:
+                    elif free_ram_size[r] < free_ram_size[min_block_id]:
                         min_block_id = r
-            if min_block_id!=-1:
+            if min_block_id != -1:
                 free_ram_size[min_block_id] = free_ram_size[min_block_id] - process_size[p]
-        self.min_ram_cap = min(free_ram_size)
-        print(f'min: {self.min_ram_cap}')
+        self._set_min_ram(free_ram_size)
 
     def _decision(self):
         self._normal_effect()
@@ -367,6 +395,21 @@ class WorstFit(BaseFit):
     def __init__(self, mother_ui):
         super().__init__(mother_ui)
         self._max_block_id = -1
+
+    def _first_cal(self):
+        free_ram_size = [model.capacity for model in self.block_list if model.type_block == 0]
+        process_size = [model.capacity for model in self.process_list]
+        for p in range(len(self.process_list)):
+            min_block_id = -1
+            for r in range(len(free_ram_size)):
+                if free_ram_size[r] >= process_size[p]:
+                    if min_block_id == -1:
+                        min_block_id = r
+                    elif free_ram_size[r] > free_ram_size[min_block_id]:
+                        min_block_id = r
+            if min_block_id != -1:
+                free_ram_size[min_block_id] = free_ram_size[min_block_id] - process_size[p]
+        self._set_min_ram(free_ram_size)
 
     def _decision(self):
         self._normal_effect()

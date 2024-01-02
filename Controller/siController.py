@@ -56,8 +56,6 @@ class SiController(QWidget):
         self.ui.bestFit_btn.clicked.connect(self.set_best_fit)
         self.ui.worstFit_btn.clicked.connect(self.set_worst_fit)
 
-
-
     def __set_speed_btn_default_css(self):
         self.ui.speed075_btn.setStyleSheet('background-color: #666666;')
         self.ui.speed1_btn.setStyleSheet('background-color: #666666;')
@@ -146,8 +144,8 @@ class SiController(QWidget):
 
     def __restart_fit(self):
         self.cur_fit.restart(self.ram_block_list, self.process_list)
-        self.pause_()
-        self.__pausing = False
+        self.cur_fit.pause()
+        self.__pausing = True
         self.ui.pause_btn.setText('Bắt đầu')
 
     def run_(self):

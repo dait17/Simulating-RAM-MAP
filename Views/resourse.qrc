@@ -1,5 +1,6 @@
 <RCC>
   <qresource prefix="icons">
+    <file>icons/Memory Slot.png</file>
     <file>icons/close.png</file>
     <file>icons/direction.png</file>
     <file>icons/down.png</file>

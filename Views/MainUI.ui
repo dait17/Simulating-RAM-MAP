@@ -11,7 +11,11 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>MainWindow</string>
+   <string>Mô Phỏng Cấp Phát Bộ Nhớ</string>
+  </property>
+  <property name="windowIcon">
+   <iconset resource="resourse.qrc">
+    <normaloff>:/icons/icons/Memory Slot.png</normaloff>:/icons/icons/Memory Slot.png</iconset>
   </property>
   <property name="styleSheet">
    <string notr="true">* {
@@ -45,6 +49,8 @@
    </layout>
   </widget>
  </widget>
- <resources/>
+ <resources>
+  <include location="resourse.qrc"/>
+ </resources>
  <connections/>
 </ui>

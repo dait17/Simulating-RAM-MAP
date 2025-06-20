@@ -6,7 +6,7 @@
 ## Demo Video
 🎬 **Xem video chạy thử nghiệm chương trình:**
 
-[![Video Demo](https://img.shields.io/badge/▶️-Xem%20Video%20Demo-red?style=for-the-badge)](./video%20chạy%20thử%20nghiệm%20chương%20trình.mkv)
+[![Video Demo](video%20ch%E1%BA%A1y%20th%E1%BB%AD%20nghi%E1%BB%87m%20ch%C6%B0%C6%A1ng%20tr%C3%ACnh.gif)
 
 *Click vào badge trên để xem video demo chi tiết các tính năng của ứng dụng*
 
